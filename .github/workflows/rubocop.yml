@@ -1,0 +1,36 @@
+---
+name: Rubocop
+
+on:
+  workflow_call:
+    inputs:
+      ruby:
+        description: Ruby version to use
+        default: '2.7'
+        required: false
+        type: string
+      working-directory:
+        description: The working directory where all jobs should be executed
+        default: '.'
+        required: false
+        type: string
+      command:
+        description: The command used to run Rubocop
+        default: bundle exec rake rubocop
+        required: false
+        type: string
+
+jobs:
+  rubocop:
+    name: Rubocop
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ inputs.ruby }}
+          bundler-cache: true
+          working-directory: ${{ inputs.working-directory }}
+      - name: Rubocop
+        run: ${{ inputs.command }}
