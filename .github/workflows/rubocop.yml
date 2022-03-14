@@ -16,7 +16,12 @@ on:
         type: string
       command:
         description: The command used to run Rubocop
-        default: bundle exec rake rubocop
+        default: |
+          if [ -f Rakefile ] ; then
+            bundle exec rake rubocop
+          else
+            bundle exec rubocop
+          fi
         required: false
         type: string
 
