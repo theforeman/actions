@@ -1,0 +1,80 @@
+---
+name: Foreman Plugin
+
+on:
+  workflow_call:
+    inputs:
+      plugin:
+        description: Plugin name
+        required: true
+        type: string
+      foreman_version:
+        description: Foreman version to use
+        default: 'develop'
+        required: false
+        type: string
+
+env:
+  RAILS_ENV: test
+  DATABASE_URL: postgresql://postgres:@localhost/test
+  DATABASE_CLEANER_ALLOW_REMOTE_DATABASE_URL: true
+  BUNDLE_WITHOUT: "console:development:journald:libvirt"
+
+jobs:
+  setup_matrix:
+    name: Setup matrix
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.build_matrix.outputs.matrix }}
+    steps:
+      - name: Build test matrix
+        id: build_matrix
+        # TODO: Make this dynamic, based on the Foreman version
+        run: |
+          echo '::set-output name=matrix::{"ruby": ["2.5", "2.7"], "node": ["12"]}'
+
+  test:
+    name: "Foreman ${{ inputs.foreman_version }} with Ruby ${{ matrix.ruby }} and Node ${{ matrix.node }}"
+    needs: setup_matrix
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:12.1
+        ports: ['5432:5432']
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.setup_matrix.outputs.matrix) }}
+    steps:
+      - run: sudo apt-get update
+      - run: sudo apt-get install build-essential libcurl4-openssl-dev zlib1g-dev libpq-dev
+      - name: "Check out Foreman ${{ inputs.foreman_version }}"
+        uses: actions/checkout@v3
+        with:
+          repository: theforeman/foreman
+          ref: ${{ inputs.foreman_version }}
+      - name: Check out plugin
+        uses: actions/checkout@v2
+        with:
+          path: ${{ inputs.plugin }}
+      - name: Set up plugin in Foreman
+        run: |
+          echo "gemspec name: '${{ inputs.plugin }}', path: '${{ inputs.plugin }}'" > "bundler.d/${{ inputs.plugin }}.local.rb"
+          if [ -d ${{ inputs.plugin }}/gemfile.d ] ; then
+            cat ${{ inputs.plugin }}/gemfile.d/*.rb >> bundler.d/${{ inputs.plugin }}.local.rb
+          fi
+      - name: "Set up Ruby ${{ matrix.ruby }}"
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby }}
+          bundler-cache: true
+      - name: "Set up Node ${{ matrix.node }}"
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node }}
+      - name: Prepare test env
+        run: |
+          bundle exec rake db:create
+          bundle exec rake db:migrate
+      - name: Run plugin tests
+        run: bundle exec rake test:${{ inputs.plugin }}
