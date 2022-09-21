@@ -3,6 +3,8 @@
 This repository contains [reusable workflows](https://docs.github.com/en/actions/learn-github-actions/reusing-workflows)
 to reduce duplication in actions in the Foreman project.
 
+At this moment it's considered experimental.
+
 ## Rubocop
 
 To call Rubocop within your CI, use the following workflow:
@@ -19,7 +21,7 @@ concurrency:
 jobs:
   rubocop:
     name: Rubocop
-    uses: ekohl/actions/.github/workflows/rubocop.yml@v0
+    uses: theforeman/actions/.github/workflows/rubocop.yml@v0
 ```
 
 ## Foreman plugin tests
@@ -38,12 +40,12 @@ concurrency:
 jobs:
   rubocop:
     name: Rubocop
-    uses: ekohl/actions/.github/workflows/rubocop.yml@v0
+    uses: theforeman/actions/.github/workflows/rubocop.yml@v0
 
   test:
     name: Ruby
     needs: rubocop
-    uses: ekohl/actions/.github/workflows/foreman_plugin.yml@v0
+    uses: theforeman/actions/.github/workflows/foreman_plugin.yml@v0
     with:
       plugin: MY_PLUGIN
 ```
@@ -62,7 +64,7 @@ on:
 jobs:
   release:
     name: Release gem
-    uses: ekohl/actions/.github/workflows/release-gem.yml@v0
+    uses: theforeman/actions/.github/workflows/release-gem.yml@v0
     with:
       allowed_owner: MY_USERNAME
     secrets:
