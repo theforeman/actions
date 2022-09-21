@@ -1,0 +1,35 @@
+---
+name: Release gem
+
+on:
+  workflow_call:
+    inputs:
+      allowed_owner:
+        description: 'Only allow this owner. Used to prevent releasing on forks'
+        required: true
+        type: 'string'
+      ruby_version:
+        description: 'Ruby version used to build'
+        default: '3.1'
+        type: 'string'
+    secrets:
+      api_key:
+        description: 'The Rubygems API key'
+        required: true
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    if: github.repository_owner == inputs.allowed_owner
+    steps:
+      - uses: actions/checkout@v3
+      - name: 'Install Ruby ${{ inputs.ruby_version }}'
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '${{ inputs.ruby_version }}'
+      - name: Build gem
+        run: gem build *.gemspec
+      - name: Publish gem to rubygems.org
+        run: gem push *.gem
+        env:
+          GEM_HOST_API_KEY: '${{ secrets.api_key }}'

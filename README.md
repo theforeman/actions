@@ -47,3 +47,24 @@ jobs:
     with:
       plugin: MY_PLUGIN
 ```
+
+## Gem release
+
+To release a gem, use the following workflow
+
+```yaml
+name: Release
+
+on:
+  create:
+    ref_type: tag
+
+jobs:
+  release:
+    name: Release gem
+    uses: ekohl/actions/.github/workflows/release-gem.yml@v0
+    with:
+      allowed_owner: MY_USERNAME
+    secrets:
+      api_key: ${{ secrets.RUBYGEM_API_KEY }}
+```
