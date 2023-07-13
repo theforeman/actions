@@ -1,0 +1,47 @@
+---
+name: Test
+
+on:
+  workflow_call:
+    inputs:
+      ruby:
+        description: Ruby versions to use, written as a JSON string"
+        default: '["2.7"]'
+        required: false
+        type: string
+      working-directory:
+        description: The working directory where all jobs should be executed
+        default: '.'
+        required: false
+        type: string
+      command:
+        description: The command used to test
+        default: bundle exec rake spec
+        required: false
+        type: string
+
+jobs:
+  rubocop:
+    name: "Ruby ${{ matrix.ruby }}"
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        ruby: ${{ fromJSON(inputs.ruby) }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby }}
+          bundler-cache: true
+          working-directory: ${{ inputs.working-directory }}
+      - name: Verify gemspec
+        run: |
+          if compgen -G "*.gemspec" > /dev/null ; then
+            gem build --strict *.gemspec
+          fi
+        working-directory: ${{ inputs.working-directory }}
+      - name: Run tests
+        run: ${{ inputs.command }}
+        working-directory: ${{ inputs.working-directory }}

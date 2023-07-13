@@ -50,6 +50,25 @@ jobs:
       plugin: MY_PLUGIN
 ```
 
+## Gem test
+
+To test a simple gem that only needs Ruby and bundler, use the following workflow:
+
+```yaml
+name: CI
+
+on: pull_request
+
+concurrency:
+  group: ${{ github.head_ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Tests
+    uses: theforeman/actions/.github/workflows/test-gem.yml@v0
+```
+
 ## Gem release
 
 To release a gem, use the following workflow
