@@ -21,7 +21,7 @@ on:
         type: string
 
 jobs:
-  rubocop:
+  test:
     name: "Ruby ${{ matrix.ruby }}"
     runs-on: ubuntu-latest
     strategy:
