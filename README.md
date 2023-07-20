@@ -69,6 +69,17 @@ jobs:
     uses: theforeman/actions/.github/workflows/test-gem.yml@v0
 ```
 
+By default it uses `bundle exec rake spec` but it's possible to override the command:
+
+```yaml
+jobs:
+  test:
+    name: Tests
+    uses: theforeman/actions/.github/workflows/test-gem.yml@v0
+    with:
+      command: bundle exec rake test
+```
+
 ## Gem release
 
 To release a gem, use the following workflow
