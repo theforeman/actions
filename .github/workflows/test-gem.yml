@@ -14,6 +14,11 @@ on:
         default: bundle exec rake spec
         required: false
         type: string
+      packages:
+        description: Packages to install
+        default: ''
+        requires: false
+        type: string
 
 jobs:
   setup_matrix:
@@ -34,6 +39,8 @@ jobs:
       matrix:
         ruby: ${{ fromJSON(needs.setup_matrix.outputs.ruby) }}
     steps:
+      - command: sudo apt update && sudo apt install -y ${{ inputs.packages }}
+        if: inputs.pacakges != ''
       - uses: actions/checkout@v3
       - name: Setup ruby
         uses: ruby/setup-ruby@v1
