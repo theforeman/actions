@@ -100,3 +100,21 @@ jobs:
     secrets:
       api_key: ${{ secrets.RUBYGEM_API_KEY }}
 ```
+
+## Update translations - Hammer plugins
+```yaml
+name: Update translations
+
+on:
+  workflow_dispatch:
+
+jobs:
+  tx-update:
+    name: Update translations
+    uses: theforeman/foreman_actions/.github/workflows/tx-hammer-plugins.yml@v0
+    with:
+      gem_name: "hammer-cli-foreman-plugin"
+    secrets:
+      tx_token: "${{ secrets.TX_TOKEN }}"
+      gh_token: "${{ secrets.GITHUB_TOKEN }}"
+```

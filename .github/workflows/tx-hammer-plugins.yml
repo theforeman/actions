@@ -1,0 +1,96 @@
+name: Translations
+
+on:
+  workflow_call:
+    inputs:
+      gem_name:
+        description: 'Name of the Gem'
+        required: true
+        type: 'string'
+    secrets:
+      tx_token:
+        description: 'API token for the Transifex.'
+        required: true
+      gh_token:
+        description: 'GitHub token with permissions to create a pull request'
+        required: true
+
+jobs:
+  tx-update:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ${{ inputs.gem_name  }}
+
+    steps:
+      - name: Get hammer-cli
+        uses: actions/checkout@v4
+        with:
+          repository: theforeman/hammer-cli
+          ref: master
+          path: hammer-cli
+
+      - name: Get ${{ github.repository }}
+        uses: actions/checkout@v4
+        with:
+          path: ${{ inputs.gem_name  }}
+
+      - name: Install Transifex dependencies
+        run: |
+          sudo apt-get -y install gettext
+
+      - name: "Install Transifex"
+        run: |
+          curl -o- https://raw.githubusercontent.com/transifex/cli/master/install.sh | bash
+          sudo mv tx /usr/local/bin/
+          sudo chown -R runner:runner /usr/local/bin
+
+      - name: Configure plugin
+        run: |
+          echo "gemspec path: '../hammer-cli', name: 'hammer_cli'" > Gemfile.local.rb
+          mkdir -p ./.tx
+          cat > ./.tx/config <<EOF
+          [main]
+          host = https://rest.api.transifex.com
+          token = ${{ secrets.tx_token  }}
+
+          [o:foreman:p:foreman:r:${{ inputs.gem_name }}]
+          file_filter = locale/<lang>/${{ inputs.gem_name }}.edit.po
+          source_file = locale/${{ inputs.gem_name }}.pot
+          source_lang = en
+          type = PO
+          resource_name = ${{ inputs.gem_name }}
+          EOF
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "2.7"
+          bundler-cache: true
+          working-directory: ${{ inputs.gem_name }}
+
+      - name: Set up Git
+        run: |
+          git config user.name "Foreman Translation action"
+          git config user.email "noreply@foreman.example.com"
+
+      - name: Pull translations
+        env:
+          TX_TOKEN: ${{ secrets.tx_token  }}
+        run: |
+          bundle exec rake tx:update
+
+      - name: Cleanup before the PR
+        run: |
+          git checkout -f
+          rm -rf vendor
+
+      - name: Open a PR
+        uses: peter-evans/create-pull-request@v5
+        with:
+          branch: "tx-pull"
+          branch-suffix: "timestamp"
+          title: "Update translations"
+          body: ''
+          delete-branch: true
+          path: ${{ inputs.gem_name  }}
