@@ -31,7 +31,7 @@ jobs:
         id: build_matrix
         # TODO: Make this dynamic, based on the Foreman version
         run: |
-          echo '::set-output name=matrix::{"ruby": ["2.7"], "node": ["12"]}'
+          echo 'matrix={"ruby": ["2.7"], "node": ["12"]}' >> "$GITHUB_OUTPUT"
 
   test:
     name: "Foreman ${{ inputs.foreman_version }} with Ruby ${{ matrix.ruby }} and Node ${{ matrix.node }}"
