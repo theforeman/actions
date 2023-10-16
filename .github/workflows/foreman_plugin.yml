@@ -49,12 +49,12 @@ jobs:
       - run: sudo apt-get update
       - run: sudo apt-get install build-essential libcurl4-openssl-dev zlib1g-dev libpq-dev
       - name: "Check out Foreman ${{ inputs.foreman_version }}"
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           repository: theforeman/foreman
           ref: ${{ inputs.foreman_version }}
       - name: Check out plugin
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           path: ${{ inputs.plugin }}
       - name: Set up plugin in Foreman
