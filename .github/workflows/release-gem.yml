@@ -22,7 +22,7 @@ jobs:
     runs-on: ubuntu-latest
     if: github.repository_owner == inputs.allowed_owner
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: 'Install Ruby ${{ inputs.ruby_version }}'
         uses: ruby/setup-ruby@v1
         with:
