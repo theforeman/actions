@@ -29,9 +29,12 @@ jobs:
     steps:
       - name: Build test matrix
         id: build_matrix
-        # TODO: Make this dynamic, based on the Foreman version
         run: |
-          echo 'matrix={"ruby": ["2.7"], "node": ["12"]}' >> "$GITHUB_OUTPUT"
+          {
+            echo 'matrix<<EOF'
+            curl --silent --show-error --fail https://raw.githubusercontent.com/theforeman/foreman/${{ inputs.foreman_version }}/.github/matrix.json
+            echo 'EOF'
+          } >> "$GITHUB_OUTPUT"
 
   test:
     name: "Foreman ${{ inputs.foreman_version }} with Ruby ${{ matrix.ruby }} and Node ${{ matrix.node }}"
