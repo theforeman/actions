@@ -50,6 +50,25 @@ jobs:
       plugin: MY_PLUGIN
 ```
 
+By default, this will run with the Ruby/NodeJS combination that is configured in Foreman's `.github/matrix.json`.
+
+You can adjust this matrix by setting the `matrix_include` and `matrix_exclude` inputs to the workflow:
+
+```yaml
+name: CI
+
+on: pull_request
+
+jobs:
+  test:
+    name: Ruby
+    uses: theforeman/actions/.github/workflows/foreman_plugin.yml@v0
+    with:
+      plugin: MY_PLUGIN
+      matrix_include: '[{"ruby": "3.0", "node": "20"}]'
+      matrix_exclude: '[{"ruby": "2.5", "node": "10"}, {"ruby": "2.5", "node": "12"}]'
+```
+
 ## Gem test
 
 To test a simple gem that only needs Ruby and bundler, use the following workflow:
