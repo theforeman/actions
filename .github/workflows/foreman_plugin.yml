@@ -13,6 +13,16 @@ on:
         default: 'develop'
         required: false
         type: string
+      matrix_include:
+        description: Additional test matrix combinations to include
+        default: '[]'
+        required: false
+        type: string
+      matrix_exclude:
+        description: Test matrix combinations to exclude
+        default: '[]'
+        required: false
+        type: string
 
 env:
   RAILS_ENV: test
@@ -30,9 +40,16 @@ jobs:
       - name: Build test matrix
         id: build_matrix
         run: |
+          curl --silent --show-error --fail --output matrix.json https://raw.githubusercontent.com/theforeman/foreman/${{ inputs.foreman_version }}/.github/matrix.json
+          cat >matrix_include.json <<EOF
+          ${{ inputs.matrix_include }}
+          EOF
+          cat >matrix_exclude.json <<EOF
+          ${{ inputs.matrix_exclude }}
+          EOF
           {
             echo 'matrix<<EOF'
-            curl --silent --show-error --fail https://raw.githubusercontent.com/theforeman/foreman/${{ inputs.foreman_version }}/.github/matrix.json
+            python3 -c 'import json; matrix=json.load(open("matrix.json")); matrix["include"]=json.load(open("matrix_include.json")); matrix["exclude"]=json.load(open("matrix_exclude.json")); print(json.dumps(matrix));'
             echo 'EOF'
           } >> "$GITHUB_OUTPUT"
 
