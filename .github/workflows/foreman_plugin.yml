@@ -52,7 +52,7 @@ jobs:
       matrix: ${{ fromJson(needs.setup_matrix.outputs.matrix) }}
     steps:
       - run: sudo apt-get update
-      - run: sudo apt-get install build-essential libcurl4-openssl-dev zlib1g-dev libpq-dev
+      - run: sudo apt-get install -y build-essential libcurl4-openssl-dev zlib1g-dev libpq-dev
       - name: "Check out Foreman ${{ inputs.foreman_version }}"
         uses: actions/checkout@v4
         with:
@@ -88,3 +88,52 @@ jobs:
           bundle exec rake db:migrate
       - name: Run plugin tests
         run: bundle exec rake test:${{ inputs.plugin }}
+
+  database:
+    name: "Database - Foreman ${{ inputs.foreman_version }} with Ruby ${{ matrix.ruby }} and Node ${{ matrix.node }}"
+    needs: setup_matrix
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: 'postgres:12'
+        ports: ['5432:5432']
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+        env:
+          POSTGRES_PASSWORD: password
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.setup_matrix.outputs.matrix) }}
+    steps:
+      - run: sudo apt-get update
+      - run: sudo apt-get install -y build-essential libcurl4-openssl-dev zlib1g-dev libpq-dev
+      - name: "Check out Foreman ${{ inputs.foreman_version }}"
+        uses: actions/checkout@v4
+        with:
+          repository: theforeman/foreman
+          ref: ${{ inputs.foreman_version }}
+      - name: "Set up Ruby ${{ matrix.ruby }}"
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby }}
+          bundler-cache: true
+      - name: Prepare test env
+        run: |
+          bundle exec rake db:create
+          bundle exec rake db:migrate
+          bundle exec rake db:seed
+      - name: Check out plugin
+        uses: actions/checkout@v4
+        with:
+          path: ${{ inputs.plugin }}
+      - name: Set up plugin in Foreman
+        run: |
+          echo "gemspec name: '${{ inputs.plugin }}', path: '${{ inputs.plugin }}'" > "bundler.d/${{ inputs.plugin }}.local.rb"
+          if [ -d ${{ inputs.plugin }}/gemfile.d ] ; then
+            cat ${{ inputs.plugin }}/gemfile.d/*.rb >> bundler.d/${{ inputs.plugin }}.local.rb
+          fi
+      - name: Install plugin
+        run: bundle install
+      - name: Run plugin db migrations and seeds
+        run: |
+          bundle exec rake db:migrate
+          bundle exec rake db:seed
