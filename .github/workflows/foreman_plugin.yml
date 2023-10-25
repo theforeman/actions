@@ -45,6 +45,10 @@ on:
         description: Test plugin database migrations and seeds on an existing Foreman database
         default: true
         type: boolean
+      test_core_tests:
+        description: Run a predefined set of tests from core to ensure integration
+        default: true
+        type: boolean
       environment_variables:
         description: arbitrary environment variables from caller
         required: false
@@ -195,6 +199,14 @@ jobs:
         if: ${{ contains(matrix.task, 'nulldb') }}
       - name: Run rake ${{ matrix.task }}
         run: bundle exec rake ${{ matrix.task }}
+      - name: Run extra core tests
+        if: ${{ contains(matrix.task, 'test') && inputs.test_core_tests }}
+        run: |
+          if bundle exec rake -T | grep -q 'test:core_tests'; then
+            bundle exec rake test:core_tests
+          else
+            bundle exec rake test TEST="test/unit/foreman/access_permissions_test.rb"
+          fi
       - name: Upload logs
         uses: actions/upload-artifact@v7
         if: ${{ failure() && contains(matrix.task, 'test') }}
