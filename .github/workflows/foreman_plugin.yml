@@ -87,7 +87,9 @@ jobs:
           bundle exec rake db:create
           bundle exec rake db:migrate
       - name: Run plugin tests
-        run: bundle exec rake test:${{ inputs.plugin }}
+        run: |
+          bundle exec rake test:${{ inputs.plugin }}
+          bundle exec rake test TEST="test/unit/foreman/access_permissions_test.rb"
 
   database:
     name: "Database - Foreman ${{ inputs.foreman_version }} with Ruby ${{ matrix.ruby }} and Node ${{ matrix.node }}"
