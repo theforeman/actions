@@ -39,19 +39,12 @@ jobs:
     steps:
       - name: Build test matrix
         id: build_matrix
-        run: |
-          curl --silent --show-error --fail --output matrix.json https://raw.githubusercontent.com/theforeman/foreman/${{ inputs.foreman_version }}/.github/matrix.json
-          cat >matrix_include.json <<EOF
-          ${{ inputs.matrix_include }}
-          EOF
-          cat >matrix_exclude.json <<EOF
-          ${{ inputs.matrix_exclude }}
-          EOF
-          {
-            echo 'matrix<<EOF'
-            python3 -c 'import json; matrix=json.load(open("matrix.json")); matrix["include"]=json.load(open("matrix_include.json")); matrix["exclude"]=json.load(open("matrix_exclude.json")); print(json.dumps(matrix));'
-            echo 'EOF'
-          } >> "$GITHUB_OUTPUT"
+        uses: theforeman/gha-matrix-builder@v0
+        with:
+          repository: theforeman/foreman
+          ref: ${{ inputs.foreman_version }}
+          include: ${{ inputs.matrix_include }}
+          exclude: ${{ inputs.matrix_exclude }}
 
   test:
     name: "Foreman ${{ inputs.foreman_version }} with Ruby ${{ matrix.ruby }} and Node ${{ matrix.node }}"
