@@ -47,12 +47,12 @@ jobs:
           exclude: ${{ inputs.matrix_exclude }}
 
   test:
-    name: "Foreman ${{ inputs.foreman_version }} with Ruby ${{ matrix.ruby }} and Node ${{ matrix.node }}"
+    name: "Foreman ${{ inputs.foreman_version }} with Ruby ${{ matrix.ruby }} and Node ${{ matrix.node }} on PostgreSQL ${{ matrix.postgresql }}"
     needs: setup_matrix
     runs-on: ubuntu-latest
     services:
       postgres:
-        image: 'postgres:12'
+        image: 'postgres:${{ matrix.postgresql }}'
         ports: ['5432:5432']
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
         env:
@@ -100,12 +100,12 @@ jobs:
         run: bundle exec rake test:${{ inputs.plugin }}
 
   database:
-    name: "Database - Foreman ${{ inputs.foreman_version }} with Ruby ${{ matrix.ruby }} and Node ${{ matrix.node }}"
+    name: "Database - Foreman ${{ inputs.foreman_version }} with Ruby ${{ matrix.ruby }} and Node ${{ matrix.node }} on PostgreSQL ${{ matrix.postgresql }}"
     needs: setup_matrix
     runs-on: ubuntu-latest
     services:
       postgres:
-        image: 'postgres:12'
+        image: 'postgres:${{ matrix.postgresql }}'
         ports: ['5432:5432']
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
         env:
