@@ -13,6 +13,11 @@ on:
         default: 'develop'
         required: false
         type: string
+      foreman_repository:
+        description: Foreman repository to use
+        default: 'theforeman/foreman'
+        required: false
+        type: string
       matrix_include:
         description: Additional test matrix combinations to include
         default: '[]'
@@ -41,7 +46,7 @@ jobs:
         id: build_matrix
         uses: theforeman/gha-matrix-builder@v0
         with:
-          repository: theforeman/foreman
+          repository: ${{ inputs.foreman_repository }}
           ref: ${{ inputs.foreman_version }}
           include: ${{ inputs.matrix_include }}
           exclude: ${{ inputs.matrix_exclude }}
@@ -66,7 +71,7 @@ jobs:
       - name: "Check out Foreman ${{ inputs.foreman_version }}"
         uses: actions/checkout@v4
         with:
-          repository: theforeman/foreman
+          repository: ${{ inputs.foreman_repository }}
           ref: ${{ inputs.foreman_version }}
       - name: Check out plugin
         uses: actions/checkout@v4
@@ -119,7 +124,7 @@ jobs:
       - name: "Check out Foreman ${{ inputs.foreman_version }}"
         uses: actions/checkout@v4
         with:
-          repository: theforeman/foreman
+          repository: ${{ inputs.foreman_repository }}
           ref: ${{ inputs.foreman_version }}
       - name: "Set up Ruby ${{ matrix.ruby }}"
         uses: ruby/setup-ruby@v1
