@@ -20,7 +20,7 @@ on:
           if [ -f Rakefile ] ; then
             bundle exec rake rubocop
           else
-            bundle exec rubocop
+            bundle exec rubocop --parallel
           fi
         required: false
         type: string
