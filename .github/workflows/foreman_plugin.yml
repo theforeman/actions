@@ -57,7 +57,7 @@ jobs:
           exclude: ${{ inputs.matrix_exclude }}
 
   test:
-    name: "Foreman ${{ inputs.foreman_version }} with Ruby ${{ matrix.ruby }} and Node ${{ matrix.node }} on PostgreSQL ${{ matrix.postgresql }}"
+    name: "${{ matrix.task }} - Foreman ${{ inputs.foreman_version }} with Ruby ${{ matrix.ruby }} and Node ${{ matrix.node }} on PostgreSQL ${{ matrix.postgresql }}"
     needs: setup_matrix
     runs-on: ubuntu-latest
     services:
@@ -69,7 +69,14 @@ jobs:
           POSTGRES_PASSWORD: password
     strategy:
       fail-fast: false
-      matrix: ${{ fromJson(needs.setup_matrix.outputs.matrix) }}
+      matrix:
+        ruby: ${{ fromJson(needs.setup_matrix.outputs.matrix).ruby }}
+        node: ${{ fromJson(needs.setup_matrix.outputs.matrix).node }}
+        postgresql: ${{ fromJson(needs.setup_matrix.outputs.matrix).postgresql }}
+        task:
+          - 'test:${{ inputs.plugin }}'
+          - 'db:seed'
+          - 'plugin:assets:precompile[${{ inputs.plugin }}] RAILS_ENV=production DATABASE_URL=nulldb://nohost'
     steps:
       - run: sudo apt-get update
       - run: sudo apt-get install -y build-essential libcurl4-openssl-dev zlib1g-dev libpq-dev
@@ -130,8 +137,11 @@ jobs:
         if: ${{ hashFiles(format('{0}/package.json', inputs.plugin)) != '' }}
         run:
           bundle exec rake webpack:compile
-      - name: Run plugin tests
-        run: bundle exec rake test:${{ inputs.plugin }}
+      - name: Add nulldb DB schema
+        run: cp -f db/schema.rb.nulldb db/schema.rb
+        if: contains(matrix.task, 'precompile')
+      - name: Run rake ${{ matrix.task }}
+        run: bundle exec rake ${{ matrix.task }}
 
   database:
     name: "Database - Foreman ${{ inputs.foreman_version }} with Ruby ${{ matrix.ruby }} and Node ${{ matrix.node }} on PostgreSQL ${{ matrix.postgresql }}"
