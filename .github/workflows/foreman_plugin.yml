@@ -138,6 +138,13 @@ jobs:
         if: ${{ contains(matrix.task, 'nulldb') }}
       - name: Run rake ${{ matrix.task }}
         run: bundle exec rake ${{ matrix.task }}
+      - name: Upload logs
+        uses: actions/upload-artifact@v3
+        if: ${{ failure() && contains(matrix.task, 'test') }}
+        with:
+          name: logs-ruby-${{ matrix.ruby }}-node-${{ matrix.node }}-pg-${{ matrix.postgresql }}
+          path: log/*.log
+          retention-days: 5
 
   database:
     name: "Database - Foreman ${{ inputs.foreman_version }} with Ruby ${{ matrix.ruby }} and Node ${{ matrix.node }} on PostgreSQL ${{ matrix.postgresql }}"
