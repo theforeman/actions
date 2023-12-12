@@ -105,7 +105,7 @@ jobs:
         with:
           node-version: ${{ matrix.node }}
       - name: Setup NPM Cache
-        if: ${{ hashFiles(format('{0}/package.json', inputs.plugin)) != '' }}
+        if: ${{ hashFiles(format('{0}/package.json', inputs.plugin)) != '' && !contains(matrix.task, 'seed') }}
         uses: actions/cache@v3
         with:
           path: ~/.npm
@@ -113,28 +113,29 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node-${{ matrix.node }}-
       - name: "Build package-lock.json"
-        if: ${{ hashFiles(format('{0}/package.json', inputs.plugin)) != '' }}
+        if: ${{ hashFiles(format('{0}/package.json', inputs.plugin)) != '' && !contains(matrix.task, 'seed') }}
         run: bundle exec npm install --package-lock-only --no-audit
       - name: Archive package-lock.json
-        if: ${{ hashFiles(format('{0}/package.json', inputs.plugin)) != '' }}
+        if: ${{ hashFiles(format('{0}/package.json', inputs.plugin)) != '' && !contains(matrix.task, 'seed') }}
         uses: actions/upload-artifact@v3
         with:
           name: package-lock-ruby-${{ matrix.ruby }}-node-${{ matrix.node }}-pg-${{ matrix.postgresql }}.json
           path: package-lock.json
       - name: "Install NPM packages"
-        if: ${{ hashFiles(format('{0}/package.json', inputs.plugin)) != '' }}
+        if: ${{ hashFiles(format('{0}/package.json', inputs.plugin)) != '' && !contains(matrix.task, 'seed') }}
         run: bundle exec npm ci --no-audit
       - name: Prepare test env
+        if: ${{ !contains(matrix.task, 'nulldb') }}
         run: |
           bundle exec rake db:create
           bundle exec rake db:migrate
       - name: "Compile webpack"
-        if: ${{ hashFiles(format('{0}/package.json', inputs.plugin)) != '' }}
+        if: ${{ hashFiles(format('{0}/package.json', inputs.plugin)) != '' && contains(matrix.task, 'test') }}
         run:
           bundle exec rake webpack:compile
       - name: Add nulldb DB schema
         run: cp -f db/schema.rb.nulldb db/schema.rb
-        if: contains(matrix.task, 'precompile')
+        if: ${{ contains(matrix.task, 'nulldb') }}
       - name: Run rake ${{ matrix.task }}
         run: bundle exec rake ${{ matrix.task }}
 
