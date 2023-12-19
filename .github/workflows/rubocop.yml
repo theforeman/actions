@@ -37,5 +37,10 @@ jobs:
           ruby-version: ${{ inputs.ruby }}
           bundler-cache: true
           working-directory: ${{ inputs.working-directory }}
+      - name: Archive Gemfile.lock
+        uses: actions/upload-artifact@v4
+        with:
+          name: Gemfile-theforeman-actions-rubocop-ruby-${{ inputs.ruby }}.lock
+          path: Gemfile.lock
       - name: Rubocop
         run: ${{ inputs.command }}
