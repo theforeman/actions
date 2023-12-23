@@ -14,8 +14,8 @@ on:
         type: 'string'
     secrets:
       api_key:
-        description: 'The Rubygems API key'
-        required: true
+        description: 'The Rubygems API key to use. If not specified, uses trusted publishing'
+        required: false
 
 jobs:
   release:
@@ -29,7 +29,9 @@ jobs:
           ruby-version: '${{ inputs.ruby_version }}'
       - name: Build gem
         run: gem build *.gemspec
+      - name: Configure trusted publishing credentials
+        uses: rubygems/configure-rubygems-credentials@v1.0.0
+        with:
+          api-token: '${{ secrets.api_key }}'
       - name: Publish gem to rubygems.org
         run: gem push *.gem
-        env:
-          GEM_HOST_API_KEY: '${{ secrets.api_key }}'
