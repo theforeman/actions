@@ -1,0 +1,35 @@
+---
+name: Foreman Proxy Plugin
+
+on:
+  workflow_call:
+    inputs:
+      foreman_proxy_version:
+        description: Foraman Proxy version to use
+        default: 'develop'
+        required: false
+        type: string
+      foreman_proxy_repository:
+        description: Foreman Proxy repository to use
+        default: 'theforeman/smart-proxy'
+        required: false
+        type: string
+
+jobs:
+  rubies:
+    name: Verify supported Ruby versions
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify supported Ruby versions
+        uses: theforeman/gha-matrix-ruby-verifier@v0
+        with:
+          repository: ${{ inputs.foreman_proxy_repository }}
+          ref: ${{ inputs.foreman_proxy_version }}
+  test:
+    name: Tests
+    uses: theforeman/actions/.github/workflows/test-gem.yml@v0
+    with:
+      command: bundle exec rake test
+      environment_variables: |
+        SMART_PROXY_BRANCH=${{ inputs.foreman_proxy_version }}
