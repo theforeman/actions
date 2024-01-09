@@ -101,7 +101,7 @@ jobs:
           ruby-version: ${{ matrix.ruby }}
           bundler-cache: true
       - name: Archive Gemfile.lock
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: Gemfile-ruby-${{ matrix.ruby }}-node-${{ matrix.node }}-pg-${{ matrix.postgresql }}.lock
           path: Gemfile.lock
@@ -122,7 +122,7 @@ jobs:
         run: bundle exec npm install --package-lock-only --no-audit
       - name: Archive package-lock.json
         if: ${{ hashFiles(format('{0}/package.json', inputs.plugin)) != '' && !contains(matrix.task, 'seed') }}
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: package-lock-ruby-${{ matrix.ruby }}-node-${{ matrix.node }}-pg-${{ matrix.postgresql }}.json
           path: package-lock.json
@@ -144,7 +144,7 @@ jobs:
       - name: Run rake ${{ matrix.task }}
         run: bundle exec rake ${{ matrix.task }}
       - name: Upload logs
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: ${{ failure() && contains(matrix.task, 'test') }}
         with:
           name: logs-ruby-${{ matrix.ruby }}-node-${{ matrix.node }}-pg-${{ matrix.postgresql }}
