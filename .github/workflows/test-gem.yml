@@ -44,7 +44,7 @@ jobs:
       - name: Verify gemspec
         run: |
           if compgen -G "*.gemspec" > /dev/null ; then
-            gem build --strict *.gemspec
+            gem build --verbose --strict *.gemspec
           fi
         working-directory: ${{ inputs.working-directory }}
       - name: Run tests
