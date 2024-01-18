@@ -81,7 +81,7 @@ jobs:
       - run: sudo apt-get update
       - run: sudo apt-get install -y build-essential libcurl4-openssl-dev zlib1g-dev libpq-dev
       - name: generate artifact suffix
-        run: echo "ARTIFACT_SUFFIX=$(echo '${{ matrix.task }}' | tr -cd '[:alnum:]')" >> "${GITHUB_ENV}"
+        run: echo "ARTIFACT_SUFFIX=$(echo '${{ inputs.foreman_version }}-${{ matrix.task }}' | tr -cd '[:alnum:]-')" >> "${GITHUB_ENV}"
       - name: "Check out Foreman ${{ inputs.foreman_version }}"
         uses: actions/checkout@v4
         with:
