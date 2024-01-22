@@ -33,6 +33,10 @@ on:
         default: 'postgres'
         required: false
         type: string
+      test_existing_database:
+        description: Test plugin database migrations and seeds on an existing Foreman database
+        default: true
+        type: boolean
 
 env:
   RAILS_ENV: test
@@ -153,8 +157,9 @@ jobs:
           path: log/*.log
           retention-days: 5
 
-  database:
-    name: "Database - Foreman ${{ inputs.foreman_version }} with Ruby ${{ matrix.ruby }} and Node ${{ matrix.node }} on PostgreSQL ${{ matrix.postgresql }}"
+  existing-database:
+    name: "Existing database - Foreman ${{ inputs.foreman_version }} with Ruby ${{ matrix.ruby }} and Node ${{ matrix.node }} on PostgreSQL ${{ matrix.postgresql }}"
+    if:  ${{ inputs.test_existing_database }}
     needs: setup_matrix
     runs-on: ubuntu-latest
     services:
