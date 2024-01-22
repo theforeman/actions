@@ -112,7 +112,7 @@ jobs:
         with:
           node-version: ${{ matrix.node }}
       - name: Setup NPM Cache
-        if: ${{ hashFiles(format('{0}/package.json', inputs.plugin)) != '' && !contains(matrix.task, 'seed') }}
+        if: ${{ hashFiles(format('{0}/package.json', inputs.plugin), format('{0}/test/integration/**', inputs.plugin)) != '' && !contains(matrix.task, 'seed') }}
         uses: actions/cache@v4
         with:
           path: ~/.npm
@@ -120,16 +120,16 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node-${{ matrix.node }}-
       - name: "Build package-lock.json"
-        if: ${{ hashFiles(format('{0}/package.json', inputs.plugin)) != '' && !contains(matrix.task, 'seed') }}
+        if: ${{ hashFiles(format('{0}/package.json', inputs.plugin), format('{0}/test/integration/**', inputs.plugin)) != '' && !contains(matrix.task, 'seed') }}
         run: bundle exec npm install --package-lock-only --no-audit
       - name: Archive package-lock.json
-        if: ${{ hashFiles(format('{0}/package.json', inputs.plugin)) != '' && !contains(matrix.task, 'seed') }}
+        if: ${{ hashFiles(format('{0}/package.json', inputs.plugin), format('{0}/test/integration/**', inputs.plugin)) != '' && !contains(matrix.task, 'seed') }}
         uses: actions/upload-artifact@v4
         with:
           name: package-lock-ruby-${{ matrix.ruby }}-node-${{ matrix.node }}-pg-${{ matrix.postgresql }}-${{ env.ARTIFACT_SUFFIX }}.json
           path: package-lock.json
       - name: "Install NPM packages"
-        if: ${{ hashFiles(format('{0}/package.json', inputs.plugin)) != '' && !contains(matrix.task, 'seed') }}
+        if: ${{ hashFiles(format('{0}/package.json', inputs.plugin), format('{0}/test/integration/**', inputs.plugin)) != '' && !contains(matrix.task, 'seed') }}
         run: bundle exec npm ci --no-audit
       - name: Prepare test env
         if: ${{ !contains(matrix.task, 'nulldb') }}
@@ -137,7 +137,7 @@ jobs:
           bundle exec rake db:create
           bundle exec rake db:migrate
       - name: "Compile webpack"
-        if: ${{ hashFiles(format('{0}/package.json', inputs.plugin)) != '' && contains(matrix.task, 'test') }}
+        if: ${{ hashFiles(format('{0}/package.json', inputs.plugin), format('{0}/test/integration/**', inputs.plugin)) != '' && contains(matrix.task, 'test') }}
         run:
           bundle exec rake webpack:compile
       - name: Add nulldb DB schema
