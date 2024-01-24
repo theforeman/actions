@@ -79,6 +79,39 @@ jobs:
       matrix_exclude: '[{"ruby": "2.5", "node": "10"}, {"ruby": "2.5", "node": "12"}]'
 ```
 
+By default, this will run against Foreman `develop` branch.
+
+You can adjust this by adding another matrix:
+
+```yaml
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - 'develop'
+      - '*-stable'
+
+concurrency:
+  group: ${{ github.ref_name }}-${{ github.workflow }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Ruby
+    strategy:
+      fail-fast: false
+      matrix:
+        foreman:
+          - 3.9-stable
+          - develop
+    uses: theforeman/actions/.github/workflows/foreman_plugin.yml@v0
+    with:
+      plugin: MY_PLUGIN
+      foreman_version: ${{ matrix.foreman }}
+```
+
 ## Gem test
 
 To test a simple gem that only needs Ruby and bundler, use the following workflow:
