@@ -81,6 +81,8 @@ jobs:
           - 'test:${{ inputs.plugin }}'
           - 'db:seed'
           - 'plugin:assets:precompile[${{ inputs.plugin }}] RAILS_ENV=production DATABASE_URL=nulldb://nohost'
+        include: ${{ fromJson(needs.setup_matrix.outputs.matrix).include }}
+        exclude: ${{ fromJson(needs.setup_matrix.outputs.matrix).exclude }}
     steps:
       - run: sudo apt-get update
       - run: sudo apt-get install -y build-essential libcurl4-openssl-dev zlib1g-dev libpq-dev
@@ -171,7 +173,14 @@ jobs:
           POSTGRES_PASSWORD: password
     strategy:
       fail-fast: false
-      matrix: ${{ fromJson(needs.setup_matrix.outputs.matrix) }}
+      matrix:
+        ruby: ${{ fromJson(needs.setup_matrix.outputs.matrix).ruby }}
+        node: ${{ fromJson(needs.setup_matrix.outputs.matrix).node }}
+        postgresql: ${{ fromJson(needs.setup_matrix.outputs.matrix).postgresql }}
+        task:
+          - 'db:seed'
+        include: ${{ fromJson(needs.setup_matrix.outputs.matrix).include }}
+        exclude: ${{ fromJson(needs.setup_matrix.outputs.matrix).exclude }}
     steps:
       - run: sudo apt-get update
       - run: sudo apt-get install -y build-essential libcurl4-openssl-dev zlib1g-dev libpq-dev
