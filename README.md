@@ -31,7 +31,12 @@ To run the Foreman tests once Rubocop has passed, use the following workflow:
 ```yaml
 name: CI
 
-on: pull_request
+on:
+  pull_request:
+  push:
+    branches:
+      - 'develop'
+      - '*-stable'
 
 concurrency:
   group: ${{ github.ref_name }}-${{ github.workflow }}
@@ -57,7 +62,12 @@ You can adjust this matrix by setting the `matrix_include` and `matrix_exclude` 
 ```yaml
 name: CI
 
-on: pull_request
+on:
+  pull_request:
+  push:
+    branches:
+      - 'develop'
+      - '*-stable'
 
 jobs:
   test:
