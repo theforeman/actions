@@ -8,6 +8,14 @@ on:
         description: Plugin name
         required: true
         type: string
+      plugin_repository:
+        description: Plugin repository to use
+        required: false
+        type: string
+      plugin_version:
+        description: Plugin version to use
+        required: false
+        type: string
       foreman_version:
         description: Foreman version to use
         default: 'develop'
@@ -94,6 +102,8 @@ jobs:
       - name: Check out plugin
         uses: actions/checkout@v4
         with:
+          repository: ${{ inputs.plugin_repository }}
+          ref: ${{ inputs.plugin_version }}
           path: ${{ inputs.plugin }}
       - name: Set up plugin in Foreman
         run: |
@@ -193,6 +203,8 @@ jobs:
       - name: Check out plugin
         uses: actions/checkout@v4
         with:
+          repository: ${{ inputs.plugin_repository }}
+          ref: ${{ inputs.plugin_version }}
           path: ${{ inputs.plugin }}
       - name: Set up plugin in Foreman
         run: |
