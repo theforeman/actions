@@ -1,0 +1,17 @@
+---
+name: Test foreman_plugin.yml
+
+on:
+  pull_request:
+
+concurrency:
+  group: ${{ github.ref_name }}-${{ github.workflow }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Ruby
+    uses: ./.github/workflows/foreman_plugin.yml
+    with:
+      plugin: foreman-tasks
+      plugin_repository: theforeman/foreman-tasks
