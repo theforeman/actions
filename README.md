@@ -162,3 +162,22 @@ jobs:
     secrets:
       api_key: ${{ secrets.RUBYGEM_API_KEY }}
 ```
+
+## Tag creation
+
+```yaml
+name: Tag
+
+on:
+  push:
+    paths:
+      - "lib/foreman_plugin/version.rb"
+
+jobs:
+  release:
+    name: Create a tag
+    uses: theforeman/actions/.github/workflows/create_tag.yml@v0
+    with:
+      allowed_owner: MY_USERNAME
+```
+

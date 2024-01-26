@@ -1,0 +1,32 @@
+---
+name: Create a tag
+
+on:
+  workflow_call:
+    inputs:
+      allowed_owner:
+        description: "Only allow this owner. Used to prevent tagging on forks"
+        required: true
+        type: "string"
+      ruby_version:
+        description: "Ruby version used to build"
+        default: "2.7"
+        type: "string"
+
+jobs:
+  tag:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "${{ inputs.ruby_version }}"
+      - name: Set variables
+        run: |
+          VER=$(ruby -rrubygems -e 'puts Gem::Specification::load(Dir.glob("*.gemspec")[0]).version')
+          echo "VERSION=$VER" >> $GITHUB_ENV
+      - name: Tag snapshot
+        uses: tvdias/github-tagger@v0.0.1
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          tag: "v${{ env.VERSION }}"
