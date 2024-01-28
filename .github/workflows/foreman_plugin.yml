@@ -127,15 +127,17 @@ jobs:
       - name: "Build package-lock.json"
         if: ${{ hashFiles(format('{0}/package.json', inputs.plugin), format('{0}/test/integration/**', inputs.plugin)) != '' && !contains(matrix.task, 'seed') }}
         run: bundle exec npm install --package-lock-only --no-audit
+      - name: "Install NPM packages"
+        if: ${{ hashFiles(format('{0}/package.json', inputs.plugin), format('{0}/test/integration/**', inputs.plugin)) != '' && !contains(matrix.task, 'seed') }}
+        run: bundle exec npm ci --no-audit
       - name: Archive package-lock.json
         if: ${{ hashFiles(format('{0}/package.json', inputs.plugin), format('{0}/test/integration/**', inputs.plugin)) != '' && !contains(matrix.task, 'seed') }}
         uses: actions/upload-artifact@v4
         with:
           name: package-lock-ruby-${{ matrix.ruby }}-node-${{ matrix.node }}-pg-${{ matrix.postgresql }}-${{ env.ARTIFACT_SUFFIX }}.json
-          path: package-lock.json
-      - name: "Install NPM packages"
-        if: ${{ hashFiles(format('{0}/package.json', inputs.plugin), format('{0}/test/integration/**', inputs.plugin)) != '' && !contains(matrix.task, 'seed') }}
-        run: bundle exec npm ci --no-audit
+          path: |
+            package-lock.json
+            ${{ format('{0}/package-lock.json', inputs.plugin) }}
       - name: Prepare test env
         if: ${{ !contains(matrix.task, 'nulldb') }}
         run: |
