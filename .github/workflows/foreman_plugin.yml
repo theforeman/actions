@@ -40,6 +40,7 @@ on:
 
 env:
   RAILS_ENV: test
+  NODE_ENV: test
   DATABASE_URL: postgresql://postgres:password@localhost/test
   DATABASE_CLEANER_ALLOW_REMOTE_DATABASE_URL: true
   BUNDLE_WITHOUT: "console:development:journald:libvirt"
