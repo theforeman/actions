@@ -37,6 +37,11 @@ on:
         description: Test plugin database migrations and seeds on an existing Foreman database
         default: true
         type: boolean
+      environment_variables:
+        description: arbitrary environment variables from caller
+        required: false
+        default: ''
+        type: string
 
 env:
   RAILS_ENV: test
@@ -85,6 +90,8 @@ jobs:
         include: ${{ fromJson(needs.setup_matrix.outputs.matrix).include }}
         exclude: ${{ fromJson(needs.setup_matrix.outputs.matrix).exclude }}
     steps:
+      - name: Load environment variables from caller
+        run: echo "${{ inputs.environment_variables }}" >> $GITHUB_ENV
       - run: sudo apt-get update
       - run: sudo apt-get install -y build-essential libcurl4-openssl-dev zlib1g-dev libpq-dev
       - name: generate artifact suffix
@@ -164,7 +171,7 @@ jobs:
 
   existing-database:
     name: "Existing database - Foreman ${{ inputs.foreman_version }} with Ruby ${{ matrix.ruby }} and Node ${{ matrix.node }} on PostgreSQL ${{ matrix.postgresql }}"
-    if:  ${{ inputs.test_existing_database }}
+    if: ${{ inputs.test_existing_database }}
     needs: setup_matrix
     runs-on: ubuntu-latest
     services:
@@ -185,6 +192,8 @@ jobs:
         include: ${{ fromJson(needs.setup_matrix.outputs.matrix).include }}
         exclude: ${{ fromJson(needs.setup_matrix.outputs.matrix).exclude }}
     steps:
+      - name: Load environment variables from caller
+        run: echo "${{ inputs.environment_variables }}" >> $GITHUB_ENV
       - run: sudo apt-get update
       - run: sudo apt-get install -y build-essential libcurl4-openssl-dev zlib1g-dev libpq-dev
       - name: "Check out Foreman ${{ inputs.foreman_version }}"
