@@ -3,6 +3,9 @@ name: Test foreman_plugin.yml
 
 on:
   pull_request:
+    paths:
+      - '.github/workflows/foreman_plugin.yml'
+      - '.github/workflows/foreman_plugin_workflow_test.yml'
 
 concurrency:
   group: ${{ github.ref_name }}-${{ github.workflow }}
