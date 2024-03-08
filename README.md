@@ -112,6 +112,38 @@ jobs:
       foreman_version: ${{ matrix.foreman }}
 ```
 
+If you need to set additional environment variables (e.g. to handle specific dependencies in your Gemfile), you can provide them via `environment_variables`:
+
+```yaml
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - 'develop'
+      - '*-stable'
+
+concurrency:
+  group: ${{ github.ref_name }}-${{ github.workflow }}
+  cancel-in-progress: true
+
+jobs:
+  rubocop:
+    name: Rubocop
+    uses: theforeman/actions/.github/workflows/rubocop.yml@v0
+
+  test:
+    name: Ruby
+    needs: rubocop
+    uses: theforeman/actions/.github/workflows/foreman_plugin.yml@v0
+    with:
+      plugin: MY_PLUGIN
+      environment_variables: |
+        CUSTOM_ENV_VARIABLE_ONE=FOO
+        CUSTOM_ENV_VARIABLE_TWO=BAR
+```
+
 ## Gem test
 
 To test a simple gem that only needs Ruby and bundler, use the following workflow:
