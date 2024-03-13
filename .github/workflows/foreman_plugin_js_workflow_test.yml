@@ -1,0 +1,20 @@
+---
+name: Test foreman_plugin_js.yml
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/foreman_plugin_js.yml'
+      - '.github/workflows/foreman_plugin_js_workflow_test.yml'
+
+concurrency:
+  group: ${{ github.ref_name }}-${{ github.workflow }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: JavaScript
+    uses: ./.github/workflows/foreman_plugin_js.yml
+    with:
+      plugin: katello
+      plugin_repository: Katello/katello
