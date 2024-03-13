@@ -1,0 +1,129 @@
+---
+name: Foreman Plugin JavaScript
+
+on:
+  workflow_call:
+    inputs:
+      plugin:
+        description: Plugin name
+        required: true
+        type: string
+      plugin_repository:
+        description: Plugin repository to use
+        required: false
+        type: string
+      plugin_version:
+        description: Plugin version to use
+        required: false
+        type: string
+      foreman_version:
+        description: Foreman version to use
+        default: 'develop'
+        required: false
+        type: string
+      foreman_repository:
+        description: Foreman repository to use
+        default: 'theforeman/foreman'
+        required: false
+        type: string
+      matrix_include:
+        description: Additional test matrix combinations to include
+        default: '[]'
+        required: false
+        type: string
+      matrix_exclude:
+        description: Test matrix combinations to exclude
+        default: '[]'
+        required: false
+        type: string
+      environment_variables:
+        description: arbitrary environment variables from caller
+        required: false
+        default: ''
+        type: string
+
+jobs:
+  setup_matrix:
+    name: Setup matrix
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.build_matrix.outputs.matrix }}
+    steps:
+      - name: Build test matrix
+        id: build_matrix
+        uses: theforeman/gha-matrix-builder@v0
+        with:
+          repository: ${{ inputs.foreman_repository }}
+          ref: ${{ inputs.foreman_version }}
+          include: ${{ inputs.matrix_include }}
+          exclude: ${{ inputs.matrix_exclude }}
+
+  test:
+    name: "Foreman ${{ inputs.foreman_version }} Ruby ${{ matrix.ruby }} and Node ${{ matrix.node }}"
+    needs: setup_matrix
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        ruby:
+          - ${{ fromJson(needs.setup_matrix.outputs.matrix).ruby[0] }}
+        node: ${{ fromJson(needs.setup_matrix.outputs.matrix).node }}
+        include: ${{ fromJson(needs.setup_matrix.outputs.matrix).include }}
+        exclude: ${{ fromJson(needs.setup_matrix.outputs.matrix).exclude }}
+    steps:
+      - name: Load environment variables from caller
+        run: echo "${{ inputs.environment_variables }}" >> $GITHUB_ENV
+      - name: generate artifact suffix
+        run: echo "ARTIFACT_SUFFIX=$(echo 'ruby-${{ matrix.ruby }}-node-${{ matrix.node }}-foreman-${{ inputs.foreman_version }}' | tr -cd '[:alnum:]-')" >> "${GITHUB_ENV}"
+      - name: "Check out Foreman ${{ inputs.foreman_version }}"
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ inputs.foreman_repository }}
+          ref: ${{ inputs.foreman_version }}
+          path: ./foreman
+      - name: Check out plugin
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ inputs.plugin_repository }}
+          ref: ${{ inputs.plugin_version }}
+          path: ${{ inputs.plugin }}
+      - name: "Set up Ruby ${{ matrix.ruby }}"
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby }}
+      - name: "Set up Node ${{ matrix.node }}"
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+      - name: Setup NPM Cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ matrix.node }}-${{ hashFiles('**/package.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-${{ matrix.node }}-
+      - name: "Build Foreman package-lock.json"
+        run: npm install --package-lock-only --no-audit --legacy-peer-deps
+        working-directory: ./foreman
+      - name: "Install Foreman NPM packages"
+        run: npm ci --no-audit --legacy-peer-deps
+        working-directory: ./foreman
+      - name: "Build ${{ inputs.plugin }} package-lock.json"
+        run: npm install --package-lock-only --no-audit --legacy-peer-deps
+        working-directory: ${{ inputs.plugin }}
+      - name: "Install ${{ inputs.plugin }} NPM packages"
+        run: npm ci --no-audit --legacy-peer-deps
+        working-directory: ${{ inputs.plugin }}
+      - name: Archive package-lock.json
+        uses: actions/upload-artifact@v4
+        with:
+          name: package-lock-${{ env.ARTIFACT_SUFFIX }}.json
+          path: |
+            foreman/package-lock.json
+            ${{ format('{0}/package-lock.json', inputs.plugin) }}
+      - name: Lint ${{ inputs.plugin }}
+        run: npm run lint
+        working-directory: ${{ inputs.plugin }}
+      - name: Run ${{ inputs.plugin }} tests
+        run: npm test
+        working-directory: ${{ inputs.plugin }}
