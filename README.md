@@ -24,7 +24,7 @@ jobs:
     uses: theforeman/actions/.github/workflows/rubocop.yml@v0
 ```
 
-## Foreman plugin tests
+## Foreman plugin Ruby tests
 
 To run the Foreman tests once Rubocop has passed, use the following workflow:
 
@@ -143,6 +143,36 @@ jobs:
         CUSTOM_ENV_VARIABLE_ONE=FOO
         CUSTOM_ENV_VARIABLE_TWO=BAR
 ```
+
+## Foreman plugin JavaScript/React tests
+
+To run the Foreman plugin JavaScript/React tests, use the following workflow:
+
+```yaml
+name: JavaScript
+
+on:
+  pull_request:
+  push:
+    branches:
+      - 'develop'
+      - '*-stable'
+
+concurrency:
+  group: ${{ github.ref_name }}-${{ github.workflow }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: JavaScript
+    uses: theforeman/actions/.github/workflows/foreman_plugin_js.yml@v0
+    with:
+      plugin: MY_PLUGIN
+```
+
+By default, this will run with the NodeJS versions that is configured in Foreman's `.github/matrix.json`.
+
+You can alter the behavior the same way as with the Ruby tests.
 
 ## Gem test
 
