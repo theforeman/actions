@@ -56,6 +56,19 @@ jobs:
 ```
 
 By default, this will run with the Ruby/NodeJS combination that is configured in Foreman's `.github/matrix.json`.
+The Foreman version is specified using `foreman_version`, which defaults to `develop`.
+
+To test out pull request number 1234, you can use:
+
+```yaml
+jobs:
+  test:
+    name: Ruby
+    uses: theforeman/actions/.github/workflows/foreman_plugin.yml@v0
+    with:
+      plugin: MY_PLUGIN
+      foreman_version: refs/pull/1234/head
+```
 
 You can adjust this matrix by setting the `matrix_include` and `matrix_exclude` inputs to the workflow:
 
@@ -79,9 +92,7 @@ jobs:
       matrix_exclude: '[{"ruby": "2.5", "node": "10"}, {"ruby": "2.5", "node": "12"}]'
 ```
 
-By default, this will run against Foreman `develop` branch.
-
-You can adjust this by adding another matrix:
+You can run tests against multiple Foreman versions by using a matrix:
 
 ```yaml
 name: CI
