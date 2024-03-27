@@ -212,8 +212,10 @@ To release a gem, use the following workflow
 name: Release
 
 on:
-  create:
-    ref_type: tag
+  push:
+    # Pattern matched against refs/tags
+    tags:
+      - '**'
 
 jobs:
   release:
