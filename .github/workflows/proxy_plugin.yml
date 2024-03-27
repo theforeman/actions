@@ -1,0 +1,68 @@
+---
+name: Foreman Proxy Plugin
+
+on:
+  workflow_call:
+    inputs:
+      foreman_proxy_version:
+        description: Foraman proxy version to use
+        default: 'develop'
+        required: false
+        type: string
+      foreman_proxy_repository:
+        description: Foreman proxy repository to use
+        default: 'theforeman/smart-proxy'
+        required: false
+        type: string
+      matrix_include:
+        description: Additional test matrix combinations to include
+        default: '[]'
+        required: false
+        type: string
+      matrix_exclude:
+        description: Test matrix combinations to exclude
+        default: '[]'
+        required: false
+        type: string
+
+env:
+  BUNDLE_WITHOUT: "bmc:development:dhcp_isc_inotify:dhcp_isc_kqueue:journald:krb5:libvirt:puppetca_token_whitelisting:realm_freeipa:windows"
+
+jobs:
+  setup_matrix:
+    name: Setup matrix
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.build_matrix.outputs.matrix }}
+    steps:
+      - name: Build test matrix
+        id: build_matrix
+        uses: theforeman/gha-matrix-builder@v0
+        with:
+          repository: ${{ inputs.foreman_proxy_repository }}
+          ref: ${{ inputs.foreman_proxy_version }}
+          include: ${{ inputs.matrix_include }}
+          exclude: ${{ inputs.matrix_exclude }}
+
+  test:
+    name: "Foreman Proxy ${{ inputs.foreman_proxy_version }} with Ruby ${{ matrix.ruby }}"
+    needs: setup_matrix
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.setup_matrix.outputs.matrix) }}
+    steps:
+      - name: Check out plugin
+        uses: actions/checkout@v4
+      - name: "Set up Ruby ${{ matrix.ruby }}"
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby }}
+          bundler-cache: true
+      - name: Archive Gemfile.lock
+        uses: actions/upload-artifact@v3
+        with:
+          name: Gemfile.lock
+          path: Gemfile.lock
+      - name: Run plugin tests
+        run: bundle exec rake test
