@@ -166,6 +166,12 @@ jobs:
         if: ${{ hashFiles(format('{0}/package.json', inputs.plugin), format('{0}/test/integration/**', inputs.plugin)) != '' && contains(matrix.task, 'test') }}
         run:
           bundle exec rake webpack:compile
+      - name: Archive all_react_app_exports
+        if: ${{ hashFiles(format('{0}/package.json', inputs.plugin), format('{0}/test/integration/**', inputs.plugin)) != '' && contains(matrix.task, 'test') }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: all_react_app_exports-${{ env.ARTIFACT_SUFFIX }}.js
+          path: webpack/assets/javascripts/all_react_app_exports.js
       - name: Add nulldb DB schema
         run: cp -f db/schema.rb.nulldb db/schema.rb
         if: ${{ contains(matrix.task, 'nulldb') }}
