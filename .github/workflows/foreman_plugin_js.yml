@@ -127,3 +127,11 @@ jobs:
       - name: Run ${{ inputs.plugin }} tests
         run: npm test
         working-directory: ${{ inputs.plugin }}
+
+  # A dummy job that you can mark as a required check instead of each individual test
+  test-suite:
+    needs: test
+    runs-on: ubuntu-latest
+    name: Test suite
+    steps:
+      - run: echo Test suite completed
