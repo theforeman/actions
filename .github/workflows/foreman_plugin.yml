@@ -50,6 +50,11 @@ on:
         required: false
         default: ''
         type: string
+      timeout_minutes:
+        description: timout for the test jobs in minutes
+        required: false
+        default: 60
+        type: number
 
 env:
   RAILS_ENV: test
@@ -78,6 +83,7 @@ jobs:
     name: "${{ matrix.task }} - Foreman ${{ inputs.foreman_version }} with Ruby ${{ matrix.ruby }} and Node ${{ matrix.node }} on PostgreSQL ${{ matrix.postgresql }}"
     needs: setup_matrix
     runs-on: ubuntu-latest
+    timeout-minutes: ${{ inputs.timeout_minutes }}
     services:
       postgres:
         image: '${{ inputs.postgresql_container }}:${{ matrix.postgresql }}'
@@ -198,6 +204,7 @@ jobs:
     if: ${{ inputs.test_existing_database }}
     needs: setup_matrix
     runs-on: ubuntu-latest
+    timeout-minutes: ${{ inputs.timeout_minutes }}
     services:
       postgres:
         image: '${{ inputs.postgresql_container }}:${{ matrix.postgresql }}'
