@@ -41,6 +41,11 @@ on:
         required: false
         default: ''
         type: string
+      timeout_minutes:
+        description: timout for the test jobs in minutes
+        required: false
+        default: 60
+        type: number
 
 jobs:
   setup_matrix:
@@ -62,6 +67,7 @@ jobs:
     name: "Foreman ${{ inputs.foreman_version }} Ruby ${{ matrix.ruby }} and Node ${{ matrix.node }}"
     needs: setup_matrix
     runs-on: ubuntu-latest
+    timeout-minutes: ${{ inputs.timeout_minutes }}
     strategy:
       fail-fast: false
       matrix:
