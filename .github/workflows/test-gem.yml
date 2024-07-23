@@ -41,6 +41,11 @@ jobs:
           ruby-version: ${{ matrix.ruby }}
           bundler-cache: true
           working-directory: ${{ inputs.working-directory }}
+      - name: Archive Gemfile.lock
+        uses: actions/upload-artifact@v4
+        with:
+          name: Gemfile-theforeman-actions-test-gem-ruby-${{ matrix.ruby }}.lock
+          path: Gemfile.lock
       - name: Verify gemspec
         run: |
           if compgen -G "*.gemspec" > /dev/null ; then
