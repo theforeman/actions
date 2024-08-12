@@ -193,11 +193,15 @@ jobs:
 
   # A dummy job that you can mark as a required check instead of each individual test
   test-suite:
+    if: always()
     needs: test
     runs-on: ubuntu-latest
     name: Test suite
     steps:
-      - run: echo Test suite completed
+      - name: Decide whether the needed jobs succeeded or failed
+        uses: re-actors/alls-green@release/v1
+        with:
+          jobs: ${{ toJSON(needs) }}
 
   existing-database:
     name: "Existing database - Foreman ${{ inputs.foreman_version }} with Ruby ${{ matrix.ruby }} and Node ${{ matrix.node }} on PostgreSQL ${{ matrix.postgresql }}"
@@ -263,8 +267,12 @@ jobs:
 
   # A dummy job that you can mark as a required check instead of each individual test
   existing-database-suite:
+    if: always()
     needs: existing-database
     runs-on: ubuntu-latest
     name: Existing database suite
     steps:
-      - run: echo Test suite completed
+      - name: Decide whether the needed jobs succeeded or failed
+        uses: re-actors/alls-green@release/v1
+        with:
+          jobs: ${{ toJSON(needs) }}
