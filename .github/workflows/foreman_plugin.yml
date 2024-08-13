@@ -191,18 +191,6 @@ jobs:
           path: log/*.log
           retention-days: 5
 
-  # A dummy job that you can mark as a required check instead of each individual test
-  test-suite:
-    if: always()
-    needs: test
-    runs-on: ubuntu-latest
-    name: Test suite
-    steps:
-      - name: Decide whether the needed jobs succeeded or failed
-        uses: re-actors/alls-green@release/v1
-        with:
-          jobs: ${{ toJSON(needs) }}
-
   existing-database:
     name: "Existing database - Foreman ${{ inputs.foreman_version }} with Ruby ${{ matrix.ruby }} and Node ${{ matrix.node }} on PostgreSQL ${{ matrix.postgresql }}"
     if: ${{ inputs.test_existing_database }}
@@ -266,11 +254,13 @@ jobs:
           bundle exec rake db:seed
 
   # A dummy job that you can mark as a required check instead of each individual test
-  existing-database-suite:
+  test-suite:
     if: always()
-    needs: existing-database
+    needs:
+      - test
+      - existing-database
     runs-on: ubuntu-latest
-    name: Existing database suite
+    name: Test suite
     steps:
       - name: Decide whether the needed jobs succeeded or failed
         uses: re-actors/alls-green@release/v1
