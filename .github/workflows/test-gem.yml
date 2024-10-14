@@ -19,6 +19,14 @@ on:
         required: false
         default: ''
         type: string
+      gem_repository:
+        description: Gem repository to use
+        required: false
+        type: string
+      gem_version:
+        description: Gem version to use
+        required: false
+        type: string
 
 jobs:
   setup_matrix:
@@ -29,6 +37,9 @@ jobs:
     steps:
       - id: ruby
         uses: ekohl/ruby-version@v0
+        with:
+          repository: ${{ inputs.gem_repository }}
+          ref: ${{ inputs.gem_version }}
 
   test:
     name: "Ruby ${{ matrix.ruby }}"
@@ -42,6 +53,9 @@ jobs:
       - name: Load environment variables from caller
         run: echo "${{ inputs.environment_variables }}" >> $GITHUB_ENV
       - uses: actions/checkout@v4
+        with:
+          repository: ${{ inputs.gem_repository }}
+          ref: ${{ inputs.gem_version }}
       - name: Setup ruby
         uses: ruby/setup-ruby@v1
         with:
