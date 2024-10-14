@@ -14,6 +14,11 @@ on:
         default: bundle exec rake spec
         required: false
         type: string
+      environment_variables:
+        description: arbitrary environment variables from caller
+        required: false
+        default: ''
+        type: string
 
 jobs:
   setup_matrix:
@@ -34,6 +39,8 @@ jobs:
       matrix:
         ruby: ${{ fromJSON(needs.setup_matrix.outputs.ruby) }}
     steps:
+      - name: Load environment variables from caller
+        run: echo "${{ inputs.environment_variables }}" >> $GITHUB_ENV
       - uses: actions/checkout@v4
       - name: Setup ruby
         uses: ruby/setup-ruby@v1
