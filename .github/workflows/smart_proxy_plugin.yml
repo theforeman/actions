@@ -14,6 +14,14 @@ on:
         default: 'theforeman/smart-proxy'
         required: false
         type: string
+      plugin_repository:
+        description: Plugin repository to use
+        required: false
+        type: string
+      plugin_version:
+        description: Plugin version to use
+        required: false
+        type: string
 
 jobs:
   rubies:
@@ -21,6 +29,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          repository: ${{ inputs.plugin_repository }}
+          ref: ${{ inputs.plugin_version }}
       - name: Verify supported Ruby versions
         uses: theforeman/gha-matrix-ruby-verifier@v0
         with:
@@ -33,3 +44,5 @@ jobs:
       command: bundle exec rake test
       environment_variables: |
         SMART_PROXY_BRANCH=${{ inputs.foreman_proxy_version }}
+      gem_repository: ${{ inputs.plugin_repository }}
+      gem_version: ${{ inputs.plugin_version }}

@@ -1,0 +1,19 @@
+---
+name: Test smart_proxy_plugin.yml
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/smart_proxy_plugin.yml'
+      - '.github/workflows/smart_proxy_plugin_workflow_test.yml'
+
+concurrency:
+  group: ${{ github.ref_name }}-${{ github.workflow }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Ruby
+    uses: ./.github/workflows/smart_proxy_plugin.yml
+    with:
+      plugin_repository: theforeman/smart_proxy_pulp
