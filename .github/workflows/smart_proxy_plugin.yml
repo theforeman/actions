@@ -5,7 +5,7 @@ on:
   workflow_call:
     inputs:
       foreman_proxy_version:
-        description: Foraman Proxy version to use
+        description: Foreman Proxy version to use
         default: 'develop'
         required: false
         type: string
