@@ -22,6 +22,10 @@ on:
         description: Plugin version to use
         required: false
         type: string
+      extra_packages:
+        description: Additional packages to install
+        required: false
+        type: string
 
 jobs:
   rubies:
@@ -46,3 +50,4 @@ jobs:
         SMART_PROXY_BRANCH=${{ inputs.foreman_proxy_version }}
       gem_repository: ${{ inputs.plugin_repository }}
       gem_version: ${{ inputs.plugin_version }}
+      extra_packages: ${{ inputs.extra_packages }}
