@@ -1,0 +1,20 @@
+---
+name: Test test-gem.yml
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/test-gem.yml'
+      - '.github/workflows/test-gem_workflow_test.yml'
+
+concurrency:
+  group: ${{ github.ref_name }}-${{ github.workflow }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Ruby
+    uses: ./.github/workflows/test-gem.yml
+    with:
+      command: bundle exec rake test
+      gem_repository: theforeman/smart_proxy_pulp
