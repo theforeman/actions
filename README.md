@@ -185,6 +185,32 @@ By default, this will run with the NodeJS versions that is configured in Foreman
 
 You can alter the behavior the same way as with the Ruby tests.
 
+## Smart Proxy plugin test
+
+Similar to the Foreman plugin test, this is aimed at Smart Proxy plugins.
+Conceptually it verifies certain Ruby versions are supported and using `test-gem.yml` to run the tests.
+
+```
+name: CI
+
+on: pull_request
+
+concurrency:
+  group: ${{ github.ref_name }}-${{ github.workflow }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Tests
+    uses: theforeman/actions/.github/workflows/smart_proxy_plugin.yml@v0
+```
+
+It's possible to provide `foreman_proxy_version` via a parameter, but your `Gemfile` needs to respect this:
+
+```ruby
+gem 'smart_proxy', github: "theforeman/smart-proxy", branch: ENV.fetch('SMART_PROXY_BRANCH', 'develop')
+```
+
 ## Gem test
 
 To test a simple gem that only needs Ruby and bundler, use the following workflow:
