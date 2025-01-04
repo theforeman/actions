@@ -10,7 +10,7 @@ on:
         type: 'string'
       ruby_version:
         description: 'Ruby version used to build'
-        default: '3.1'
+        default: 'ruby'
         type: 'string'
     secrets:
       api_key:
