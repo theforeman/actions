@@ -13,9 +13,9 @@ on:
         default: 'ruby'
         type: 'string'
     secrets:
-      api_key:
-        description: 'The Rubygems API key'
-        required: true
+      rubygems_oidc_role:
+        description: 'The OIDC role to assume'
+        required: false
 
 jobs:
   release:
@@ -29,10 +29,11 @@ jobs:
           ruby-version: '${{ inputs.ruby_version }}'
       - name: Build gem
         run: gem build *.gemspec
+      - uses: rubygems/configure-rubygems-credentials@v1.0.0
+        with:
+          role-to-assume: ${{ secrets.rubygems_oidc_role }}
       - name: Publish gem to rubygems.org
         run: gem push *.gem
-        env:
-          GEM_HOST_API_KEY: '${{ secrets.api_key }}'
       - name: Wait for release to propagate
         run: |
           gem install rubygems-await
