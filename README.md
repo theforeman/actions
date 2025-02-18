@@ -208,7 +208,7 @@ jobs:
 It's possible to provide `foreman_proxy_version` via a parameter, but your `Gemfile` needs to respect this:
 
 ```ruby
-gem 'smart_proxy', github: "theforeman/smart-proxy", branch: ENV.fetch('SMART_PROXY_BRANCH', 'develop')
+gem 'smart_proxy', github: 'theforeman/smart-proxy', branch: ENV.fetch('SMART_PROXY_BRANCH', 'develop')
 ```
 
 ## Gem test
