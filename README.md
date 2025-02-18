@@ -190,7 +190,7 @@ You can alter the behavior the same way as with the Ruby tests.
 Similar to the Foreman plugin test, this is aimed at Smart Proxy plugins.
 Conceptually it verifies certain Ruby versions are supported and using `test-gem.yml` to run the tests.
 
-```
+```yaml
 name: CI
 
 on: pull_request
