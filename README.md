@@ -241,7 +241,9 @@ jobs:
       command: bundle exec rake test
 ```
 
-## Gem release
+## Gem release (DEPRECATED)
+
+This action is deprecated in favour of using Trusted Publishing with [voxpupuli/ruby-release](https://github.com/voxpupuli/ruby-release).
 
 To release a gem, use the following workflow
 
