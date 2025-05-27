@@ -211,6 +211,18 @@ It's possible to provide `foreman_proxy_version` via a parameter, but your `Gemf
 gem 'smart_proxy', github: 'theforeman/smart-proxy', branch: ENV.fetch('SMART_PROXY_BRANCH', 'develop')
 ```
 
+When that's done it becomes possible to test pull requests.
+For example, testing pull request number 1234:
+
+```yaml
+jobs:
+  test:
+    name: Tests
+    uses: theforeman/actions/.github/workflows/smart_proxy_plugin.yml@v0
+    with:
+      foreman_proxy_version: refs/pull/1234/head
+```
+
 ## Gem test
 
 To test a simple gem that only needs Ruby and bundler, use the following workflow:
