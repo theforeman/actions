@@ -1,0 +1,23 @@
+name: Label a PR `breaks-robottelo` on appropriate comment
+on:
+  workflow_call:
+    inputs:
+      repo:
+        required: true
+        type: string
+      issue:
+        required: true
+        type: string
+    secrets:
+      GH_TOKEN:
+        required: true
+jobs:
+  label_issues:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+    if: github.event.comment.body == '/label breaks-robottelo'
+    steps:
+      - run: gh issue edit ${{ inputs.issue }} --add-label breaks-robottelo --repo ${{ inputs.repo }}
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
