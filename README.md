@@ -241,6 +241,28 @@ jobs:
       command: bundle exec rake test
 ```
 
+## breaks-robottelo labeller
+
+A workflow that, on adding a `/label breaks-robottelo` comment to a PR, adds a label `breaks-robottelo` to that PR.
+
+```yaml
+name: Label a PR `breaks-robottelo` on appropriate comment
+on:
+  issue_comment:
+    types: [created]
+jobs:
+  breaks-robottelo:
+    uses: theforeman/actions/.github/workflows/breaks-robottelo.yml@v0
+    permissions:
+      pull-requests: write
+    with:
+      repo: ${{ github.repository }}
+      issue: ${{ github.event.issue.number }}
+    secrets:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+```
+
+
 ## Gem release (DEPRECATED)
 
 This action is deprecated in favour of using Trusted Publishing with [voxpupuli/ruby-release](https://github.com/voxpupuli/ruby-release).
