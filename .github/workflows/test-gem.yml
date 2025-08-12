@@ -60,7 +60,7 @@ jobs:
         if: ${{ inputs.extra_packages }}
       - name: Load environment variables from caller
         run: echo "${{ inputs.environment_variables }}" >> $GITHUB_ENV
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           repository: ${{ inputs.gem_repository }}
           ref: ${{ inputs.gem_version }}
