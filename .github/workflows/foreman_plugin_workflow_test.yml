@@ -14,7 +14,13 @@ concurrency:
 jobs:
   test:
     name: Ruby
+    strategy:
+      fail-fast: false
+      matrix:
+        plugin:
+          - foreman-tasks
+          - foreman_remote_execution
     uses: ./.github/workflows/foreman_plugin.yml
     with:
-      plugin: foreman-tasks
-      plugin_repository: theforeman/foreman-tasks
+      plugin: ${{ matrix.plugin }}
+      plugin_repository: theforeman/${{ matrix.plugin }}
