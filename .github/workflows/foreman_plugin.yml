@@ -98,7 +98,7 @@ jobs:
         node: ${{ fromJson(needs.setup_matrix.outputs.matrix).node }}
         postgresql: ${{ fromJson(needs.setup_matrix.outputs.matrix).postgresql }}
         task:
-          - 'test:${{ inputs.plugin }}'
+          - 'test:${{ inputs.plugin }} apipie:cache'
           - 'db:seed'
           - 'plugin:assets:precompile[${{ inputs.plugin }}] RAILS_ENV=production DATABASE_URL=nulldb://nohost'
         include: ${{ fromJson(needs.setup_matrix.outputs.matrix).include }}
@@ -187,6 +187,12 @@ jobs:
         if: ${{ contains(matrix.task, 'nulldb') }}
       - name: Run rake ${{ matrix.task }}
         run: bundle exec rake ${{ matrix.task }}
+      - name: Archive apidoc
+        uses: actions/upload-artifact@v4
+        if: contains(matrix.task, 'apipie')
+        with:
+          name: apidoc-${{ env.ARTIFACT_SUFFIX }}
+          path: public/apipie-cache/apidoc/
       - name: Upload logs
         uses: actions/upload-artifact@v4
         if: ${{ failure() && contains(matrix.task, 'test') }}
