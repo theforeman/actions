@@ -107,7 +107,7 @@ jobs:
         node: ${{ fromJson(needs.setup_matrix.outputs.matrix).node }}
         postgresql: ${{ fromJson(needs.setup_matrix.outputs.matrix).postgresql }}
         task:
-          - 'test:${{ inputs.plugin }}'
+          - 'test:${{ inputs.plugin }} apipie:cache'
           - 'db:seed'
           - 'plugin:assets:precompile[${{ inputs.plugin }}] RAILS_ENV=production DATABASE_URL=nulldb://nohost'
         include: ${{ fromJson(needs.setup_matrix.outputs.matrix).include }}
@@ -198,7 +198,7 @@ jobs:
         run: cp -f db/schema.rb.nulldb db/schema.rb
         if: ${{ contains(matrix.task, 'nulldb') }}
       - name: Run rake ${{ matrix.task }}
-        run: bundle exec rake ${{ matrix.task }}
+        run: ${{ contains(matrix.task, 'apipie') && 'APIPIE_RECORD=examples FOREMAN_APIPIE_LANGS=en' || '' }} bundle exec rake ${{ matrix.task }}
       - name: Run extra core tests
         if: ${{ contains(matrix.task, 'test') && inputs.test_core_tests }}
         run: |
@@ -207,6 +207,12 @@ jobs:
           else
             bundle exec rake test TEST="test/unit/foreman/access_permissions_test.rb"
           fi
+      - name: Archive apidoc
+        uses: actions/upload-artifact@v4
+        if: contains(matrix.task, 'apipie')
+        with:
+          name: apidoc-${{ env.ARTIFACT_SUFFIX }}
+          path: public/apipie-cache/apidoc/
       - name: Upload logs
         uses: actions/upload-artifact@v7
         if: ${{ failure() && contains(matrix.task, 'test') }}
