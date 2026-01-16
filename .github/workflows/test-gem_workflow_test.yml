@@ -17,4 +17,4 @@ jobs:
     uses: ./.github/workflows/test-gem.yml
     with:
       command: bundle exec rake test
-      gem_repository: theforeman/smart_proxy_pulp
+      gem_repository: theforeman/minitest_reporters_github
