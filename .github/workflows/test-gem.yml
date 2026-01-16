@@ -40,7 +40,7 @@ jobs:
       ruby: ${{ steps.ruby.outputs.versions }}
     steps:
       - id: ruby
-        uses: ekohl/ruby-version@v2
+        uses: voxpupuli/ruby-version@v2
         with:
           repository: ${{ inputs.gem_repository }}
           ref: ${{ inputs.gem_version }}
