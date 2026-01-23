@@ -6,7 +6,7 @@ on:
     inputs:
       ruby:
         description: Ruby version to use
-        default: '2.7'
+        default: '3.0'
         required: false
         type: string
       working-directory:
