@@ -21,7 +21,7 @@ concurrency:
 jobs:
   rubocop:
     name: Rubocop
-    uses: theforeman/actions/.github/workflows/rubocop.yml@v0
+    uses: theforeman/actions/.github/workflows/rubocop.yml@v1
 ```
 
 ## Foreman plugin Ruby tests
@@ -45,12 +45,12 @@ concurrency:
 jobs:
   rubocop:
     name: Rubocop
-    uses: theforeman/actions/.github/workflows/rubocop.yml@v0
+    uses: theforeman/actions/.github/workflows/rubocop.yml@v1
 
   test:
     name: Ruby
     needs: rubocop
-    uses: theforeman/actions/.github/workflows/foreman_plugin.yml@v0
+    uses: theforeman/actions/.github/workflows/foreman_plugin.yml@v1
     with:
       plugin: MY_PLUGIN
 ```
@@ -64,7 +64,7 @@ To test out pull request number 1234, you can use:
 jobs:
   test:
     name: Ruby
-    uses: theforeman/actions/.github/workflows/foreman_plugin.yml@v0
+    uses: theforeman/actions/.github/workflows/foreman_plugin.yml@v1
     with:
       plugin: MY_PLUGIN
       foreman_version: refs/pull/1234/head
@@ -85,7 +85,7 @@ on:
 jobs:
   test:
     name: Ruby
-    uses: theforeman/actions/.github/workflows/foreman_plugin.yml@v0
+    uses: theforeman/actions/.github/workflows/foreman_plugin.yml@v1
     with:
       plugin: MY_PLUGIN
       matrix_include: '[{"ruby": "3.0", "node": "20"}]'
@@ -117,7 +117,7 @@ jobs:
         foreman:
           - 3.9-stable
           - develop
-    uses: theforeman/actions/.github/workflows/foreman_plugin.yml@v0
+    uses: theforeman/actions/.github/workflows/foreman_plugin.yml@v1
     with:
       plugin: MY_PLUGIN
       foreman_version: ${{ matrix.foreman }}
@@ -142,12 +142,12 @@ concurrency:
 jobs:
   rubocop:
     name: Rubocop
-    uses: theforeman/actions/.github/workflows/rubocop.yml@v0
+    uses: theforeman/actions/.github/workflows/rubocop.yml@v1
 
   test:
     name: Ruby
     needs: rubocop
-    uses: theforeman/actions/.github/workflows/foreman_plugin.yml@v0
+    uses: theforeman/actions/.github/workflows/foreman_plugin.yml@v1
     with:
       plugin: MY_PLUGIN
       environment_variables: |
@@ -176,7 +176,7 @@ concurrency:
 jobs:
   test:
     name: JavaScript
-    uses: theforeman/actions/.github/workflows/foreman_plugin_js.yml@v0
+    uses: theforeman/actions/.github/workflows/foreman_plugin_js.yml@v1
     with:
       plugin: MY_PLUGIN
 ```
@@ -202,7 +202,7 @@ concurrency:
 jobs:
   test:
     name: Tests
-    uses: theforeman/actions/.github/workflows/smart_proxy_plugin.yml@v0
+    uses: theforeman/actions/.github/workflows/smart_proxy_plugin.yml@v1
 ```
 
 It's possible to provide `foreman_proxy_version` via a parameter, but your `Gemfile` needs to respect this:
@@ -218,7 +218,7 @@ For example, testing pull request number 1234:
 jobs:
   test:
     name: Tests
-    uses: theforeman/actions/.github/workflows/smart_proxy_plugin.yml@v0
+    uses: theforeman/actions/.github/workflows/smart_proxy_plugin.yml@v1
     with:
       foreman_proxy_version: refs/pull/1234/head
 ```
@@ -239,7 +239,7 @@ concurrency:
 jobs:
   test:
     name: Tests
-    uses: theforeman/actions/.github/workflows/test-gem.yml@v0
+    uses: theforeman/actions/.github/workflows/test-gem.yml@v1
 ```
 
 By default it uses `bundle exec rake spec` but it's possible to override the command:
@@ -248,7 +248,7 @@ By default it uses `bundle exec rake spec` but it's possible to override the com
 jobs:
   test:
     name: Tests
-    uses: theforeman/actions/.github/workflows/test-gem.yml@v0
+    uses: theforeman/actions/.github/workflows/test-gem.yml@v1
     with:
       command: bundle exec rake test
 ```
@@ -264,7 +264,7 @@ on:
     types: [created]
 jobs:
   breaks-robottelo:
-    uses: theforeman/actions/.github/workflows/breaks-robottelo.yml@v0
+    uses: theforeman/actions/.github/workflows/breaks-robottelo.yml@v1
     permissions:
       pull-requests: write
     with:
@@ -293,7 +293,7 @@ on:
 jobs:
   release:
     name: Release gem
-    uses: theforeman/actions/.github/workflows/release-gem.yml@v0
+    uses: theforeman/actions/.github/workflows/release-gem.yml@v1
     with:
       allowed_owner: MY_USERNAME
     secrets:
