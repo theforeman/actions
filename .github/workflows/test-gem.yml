@@ -71,7 +71,7 @@ jobs:
           bundler-cache: true
           working-directory: ${{ inputs.working-directory }}
       - name: Archive Gemfile.lock
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: Gemfile-theforeman-actions-test-gem-ruby-${{ matrix.ruby }}.lock
           path: Gemfile.lock

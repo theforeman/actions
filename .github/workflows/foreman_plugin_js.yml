@@ -133,7 +133,7 @@ jobs:
         run: npm ci --no-audit --legacy-peer-deps
         working-directory: ${{ inputs.plugin }}
       - name: Archive package-lock.json
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: package-lock-${{ env.ARTIFACT_SUFFIX }}.json
           path: |
