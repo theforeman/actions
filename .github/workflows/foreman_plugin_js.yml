@@ -122,7 +122,7 @@ jobs:
         with:
           node-version: ${{ matrix.node }}
       - name: Setup NPM Cache
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: ~/.npm
           key: ${{ runner.os }}-node-${{ matrix.node }}-${{ hashFiles('**/package.json') }}
