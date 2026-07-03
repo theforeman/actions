@@ -1,7 +1,7 @@
 ---
 name: Foreman Plugin JavaScript
 
-env:  
+env:
   BUNDLE_WITHOUT: "console:development:journald:libvirt"
 
 on:
@@ -49,6 +49,11 @@ on:
         required: false
         default: 60
         type: number
+      additional_packages:
+        description: String of additional packages that should be installed
+        default: ''
+        required: false
+        type: string
 
 jobs:
   setup_matrix:
@@ -84,6 +89,9 @@ jobs:
         run: echo "${{ inputs.environment_variables }}" >> $GITHUB_ENV
       - name: generate artifact suffix
         run: echo "ARTIFACT_SUFFIX=$(echo 'ruby-${{ matrix.ruby }}-node-${{ matrix.node }}-foreman-${{ inputs.foreman_version }}' | tr -cd '[:alnum:]-')" >> "${GITHUB_ENV}"
+      - name: install additional packages
+        if: ${{ inputs.additional_packages != '' }}
+        run: sudo apt-get update && sudo apt-get install -y ${{ inputs.additional_packages }}
       - name: "Check out Foreman ${{ inputs.foreman_version }}"
         uses: actions/checkout@v6
         with:

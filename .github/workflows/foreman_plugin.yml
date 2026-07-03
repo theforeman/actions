@@ -55,6 +55,11 @@ on:
         required: false
         default: 60
         type: number
+      additional_packages:
+        description: String of additional packages that should be installed
+        default: ''
+        required: false
+        type: string
 
 env:
   RAILS_ENV: test
@@ -112,6 +117,9 @@ jobs:
           sudo dpkg-reconfigure man-db
       - run: sudo apt-get update
       - run: sudo apt-get install -y build-essential libcurl4-openssl-dev zlib1g-dev libpq-dev
+      - name: install additional packages
+        if: ${{ inputs.additional_packages != '' }}
+        run: sudo apt-get install -y ${{ inputs.additional_packages }}
       - name: generate artifact suffix
         run: echo "ARTIFACT_SUFFIX=$(echo '${{ inputs.plugin }}-ruby-${{ matrix.ruby }}-node-${{ matrix.node }}-pg-${{ matrix.postgresql }}-foreman-${{ inputs.foreman_version }}-${{ matrix.task }}' | tr -cd '[:alnum:]-')" >> "${GITHUB_ENV}"
       - name: "Check out Foreman ${{ inputs.foreman_version }}"
@@ -227,6 +235,9 @@ jobs:
           sudo dpkg-reconfigure man-db
       - run: sudo apt-get update
       - run: sudo apt-get install -y build-essential libcurl4-openssl-dev zlib1g-dev libpq-dev
+      - name: install additional packages
+        if: ${{ inputs.additional_packages != '' }}
+        run: sudo apt-get install -y ${{ inputs.additional_packages }}
       - name: "Check out Foreman ${{ inputs.foreman_version }}"
         uses: actions/checkout@v6
         with:
