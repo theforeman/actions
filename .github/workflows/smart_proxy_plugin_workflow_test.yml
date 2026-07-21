@@ -16,4 +16,4 @@ jobs:
     name: Ruby
     uses: ./.github/workflows/smart_proxy_plugin.yml
     with:
-      plugin_repository: theforeman/smart_proxy_pulp
+      plugin_repository: theforeman/smart_proxy_remote_execution_ssh
