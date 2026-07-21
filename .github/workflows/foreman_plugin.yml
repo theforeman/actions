@@ -123,12 +123,12 @@ jobs:
       - name: generate artifact suffix
         run: echo "ARTIFACT_SUFFIX=$(echo '${{ inputs.plugin }}-ruby-${{ matrix.ruby }}-node-${{ matrix.node }}-pg-${{ matrix.postgresql }}-foreman-${{ inputs.foreman_version }}-${{ matrix.task }}' | tr -cd '[:alnum:]-')" >> "${GITHUB_ENV}"
       - name: "Check out Foreman ${{ inputs.foreman_version }}"
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           repository: ${{ inputs.foreman_repository }}
           ref: ${{ inputs.foreman_version }}
       - name: Check out plugin
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           repository: ${{ inputs.plugin_repository }}
           ref: ${{ inputs.plugin_version }}
@@ -239,7 +239,7 @@ jobs:
         if: ${{ inputs.additional_packages != '' }}
         run: sudo apt-get install -y ${{ inputs.additional_packages }}
       - name: "Check out Foreman ${{ inputs.foreman_version }}"
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           repository: ${{ inputs.foreman_repository }}
           ref: ${{ inputs.foreman_version }}
@@ -254,7 +254,7 @@ jobs:
           bundle exec rake db:migrate
           bundle exec rake db:seed
       - name: Check out plugin
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           repository: ${{ inputs.plugin_repository }}
           ref: ${{ inputs.plugin_version }}
