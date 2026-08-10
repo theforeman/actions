@@ -120,7 +120,7 @@ jobs:
           echo "man-db man-db/auto-update boolean false" | sudo debconf-set-selections
           sudo dpkg-reconfigure man-db
       - run: sudo apt-get update
-      - run: sudo apt-get install -y build-essential libcurl4-openssl-dev zlib1g-dev libpq-dev
+      - run: sudo apt-get install -y build-essential libcurl4-openssl-dev zlib1g-dev libpq-dev libcap-dev
       - name: install additional packages
         if: ${{ inputs.additional_packages != '' }}
         run: sudo apt-get install -y ${{ inputs.additional_packages }}
@@ -246,7 +246,8 @@ jobs:
           echo "man-db man-db/auto-update boolean false" | sudo debconf-set-selections
           sudo dpkg-reconfigure man-db
       - run: sudo apt-get update
-      - run: sudo apt-get install -y build-essential libcurl4-openssl-dev zlib1g-dev libpq-dev
+      - run: sudo apt-get install -y build-essential libcurl4-openssl-dev zlib1g-dev libpq-dev libcap-dev
+
       - name: install additional packages
         if: ${{ inputs.additional_packages != '' }}
         run: sudo apt-get install -y ${{ inputs.additional_packages }}
