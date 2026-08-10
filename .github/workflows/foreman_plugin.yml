@@ -111,7 +111,7 @@ jobs:
           echo "man-db man-db/auto-update boolean false" | sudo debconf-set-selections
           sudo dpkg-reconfigure man-db
       - run: sudo apt-get update
-      - run: sudo apt-get install -y build-essential libcurl4-openssl-dev zlib1g-dev libpq-dev
+      - run: sudo apt-get install -y build-essential libcurl4-openssl-dev zlib1g-dev libpq-dev libcap-dev
       - name: generate artifact suffix
         run: echo "ARTIFACT_SUFFIX=$(echo '${{ inputs.plugin }}-ruby-${{ matrix.ruby }}-node-${{ matrix.node }}-pg-${{ matrix.postgresql }}-foreman-${{ inputs.foreman_version }}-${{ matrix.task }}' | tr -cd '[:alnum:]-')" >> "${GITHUB_ENV}"
       - name: "Check out Foreman ${{ inputs.foreman_version }}"
@@ -226,7 +226,7 @@ jobs:
           echo "man-db man-db/auto-update boolean false" | sudo debconf-set-selections
           sudo dpkg-reconfigure man-db
       - run: sudo apt-get update
-      - run: sudo apt-get install -y build-essential libcurl4-openssl-dev zlib1g-dev libpq-dev
+      - run: sudo apt-get install -y build-essential libcurl4-openssl-dev zlib1g-dev libpq-dev libcap-dev
       - name: "Check out Foreman ${{ inputs.foreman_version }}"
         uses: actions/checkout@v5
         with:
