@@ -103,6 +103,8 @@ jobs:
             cat ${{ inputs.plugin }}/gemfile.d/*.rb >> bundler.d/${{ inputs.plugin }}.local.rb
           fi
         working-directory: ./foreman
+      - run: sudo apt-get update
+      - run: sudo apt-get install -y libcap-dev
       - name: "Set up Ruby ${{ matrix.ruby }}"
         uses: ruby/setup-ruby@v1
         with:
