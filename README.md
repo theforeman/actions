@@ -5,6 +5,19 @@ to reduce duplication in actions in the Foreman project.
 
 At this moment it's considered experimental.
 
+## Runner
+
+The runner defaults to `ubuntu-latest` in both Foreman plugin workflows (`foreman_plugin.yml` and `foreman_plugin_js.yml`); a specific runner can be selected with the `runner` input:
+
+```yaml
+jobs:
+  test:
+    uses: theforeman/actions/.github/workflows/foreman_plugin.yml@v1
+    with:
+      plugin: MY_PLUGIN
+      runner: ubuntu-26.04
+```
+
 ## Rubocop
 
 To call Rubocop within your CI, use the following workflow:
