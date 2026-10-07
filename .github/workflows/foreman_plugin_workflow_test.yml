@@ -24,3 +24,4 @@ jobs:
     with:
       plugin: ${{ matrix.plugin }}
       plugin_repository: theforeman/${{ matrix.plugin }}
+      generate_apidoc: true
