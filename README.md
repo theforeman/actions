@@ -7,7 +7,7 @@ At this moment it's considered experimental.
 
 ## Runner
 
-The runner defaults to `ubuntu-latest` in both Foreman plugin workflows (`foreman_plugin.yml` and `foreman_plugin_js.yml`) and the Rubocop workflow (`rubocop.yml`); a specific runner can be selected with the `runner` input:
+The runner defaults to `ubuntu-24.04` in both Foreman plugin workflows (`foreman_plugin.yml` and `foreman_plugin_js.yml`) and the Rubocop workflow (`rubocop.yml`); a specific runner can be selected with the `runner` input:
 
 ```yaml
 jobs:
