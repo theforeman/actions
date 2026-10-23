@@ -35,7 +35,7 @@ on:
 jobs:
   setup_matrix:
     name: "Determine Ruby versions"
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     outputs:
       ruby: ${{ steps.ruby.outputs.versions }}
     steps:
@@ -47,7 +47,7 @@ jobs:
 
   test:
     name: "Ruby ${{ matrix.ruby }}"
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: setup_matrix
     strategy:
       fail-fast: false
@@ -89,7 +89,7 @@ jobs:
   test-suite:
     if: always()
     needs: test
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     name: Test suite
     steps:
       - name: Decide whether the needed jobs succeeded or failed
