@@ -26,6 +26,11 @@ on:
         description: Additional packages to install
         required: false
         type: string
+      git_trace:
+        description: enable git command tracing
+        default: '0'
+        required: false
+        type: string
 
 jobs:
   rubies:
@@ -48,6 +53,7 @@ jobs:
       command: bundle exec rake test
       environment_variables: |
         SMART_PROXY_BRANCH=${{ inputs.foreman_proxy_version }}
+        GIT_TRACE=${{ inputs.git_trace }}
       gem_repository: ${{ inputs.plugin_repository }}
       gem_version: ${{ inputs.plugin_version }}
       extra_packages: ${{ inputs.extra_packages }}
