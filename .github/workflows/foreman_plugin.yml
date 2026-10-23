@@ -49,6 +49,10 @@ on:
         description: Run a predefined set of tests from core to ensure integration
         default: true
         type: boolean
+      generate_apidoc:
+        description: Record API examples during the plugin tests and upload the generated apipie documentation as an apidoc-* artifact
+        default: false
+        type: boolean
       environment_variables:
         description: arbitrary environment variables from caller
         required: false
@@ -203,7 +207,23 @@ jobs:
         run: cp -f db/schema.rb.nulldb db/schema.rb
         if: ${{ contains(matrix.task, 'nulldb') }}
       - name: Run rake ${{ matrix.task }}
-        run: bundle exec rake ${{ matrix.task }}
+        run: ${{ (inputs.generate_apidoc && contains(matrix.task, 'test')) && 'APIPIE_RECORD=examples' || '' }} bundle exec rake ${{ matrix.task }}
+      - name: Generate apidoc
+        if: ${{ inputs.generate_apidoc && contains(matrix.task, 'test') }}
+        env:
+          # Foreman enables cache_classes for apipie:cache in development, avoiding apipie's class reload
+          RAILS_ENV: development
+          FOREMAN_APIPIE_LANGS: en
+        run: |
+          bundle exec rake apipie:cache
+          test -s public/apipie-cache/apidoc/v2.html
+      - name: Archive apidoc
+        if: ${{ inputs.generate_apidoc && contains(matrix.task, 'test') }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: apidoc-${{ env.ARTIFACT_SUFFIX }}
+          path: public/apipie-cache/apidoc/
+          if-no-files-found: error
       - name: Run extra core tests
         if: ${{ contains(matrix.task, 'test') && inputs.test_core_tests }}
         run: |

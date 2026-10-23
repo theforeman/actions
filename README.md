@@ -168,6 +168,21 @@ jobs:
         CUSTOM_ENV_VARIABLE_TWO=BAR
 ```
 
+To also generate the API documentation (apipie) of Foreman with your plugin loaded, enable the `generate_apidoc` input:
+
+```yaml
+jobs:
+  test:
+    name: Ruby
+    uses: theforeman/actions/.github/workflows/foreman_plugin.yml@v1
+    with:
+      plugin: MY_PLUGIN
+      generate_apidoc: true
+```
+
+API examples are recorded while the plugin tests run, afterwards `apipie:cache` is run in a separate process and the result is uploaded as an `apidoc-<ARTIFACT_SUFFIX>` artifact, one for each test matrix leg.
+This is opt-in because recording examples breaks test suites that define a `response` or `request` helper method in controller tests (e.g. Foreman core `test/controllers/notification_recipients_controller_test.rb`).
+
 ## Foreman plugin JavaScript/React tests
 
 To run the Foreman plugin JavaScript/React tests, use the following workflow:
