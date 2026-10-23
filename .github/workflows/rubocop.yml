@@ -24,6 +24,11 @@ on:
           fi
         required: false
         type: string
+      runner:
+        description: Runner label to use for all jobs
+        required: false
+        default: ubuntu-latest
+        type: string
       additional_packages:
         description: String of additional packages that should be installed
         default: ''
@@ -33,7 +38,7 @@ on:
 jobs:
   rubocop:
     name: Rubocop
-    runs-on: ubuntu-latest
+    runs-on: ${{ inputs.runner }}
     steps:
       - uses: actions/checkout@v7
       - name: install additional packages
