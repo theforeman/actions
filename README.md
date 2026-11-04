@@ -68,6 +68,20 @@ jobs:
       plugin: MY_PLUGIN
 ```
 
+To select PostgreSQL client tools explicitly, set `psql_client_version`:
+
+```yaml
+jobs:
+  test:
+    uses: theforeman/actions/.github/workflows/foreman_plugin.yml@v1
+    with:
+      plugin: MY_PLUGIN
+      psql_client_version: '16'
+```
+
+This installs the selected client tools. If omitted or empty, no client packages
+are installed by these steps and the runner's existing tools and `PATH` are used.
+
 By default, this will run with the Ruby/NodeJS combination that is configured in Foreman's `.github/matrix.json`.
 The Foreman version is specified using `foreman_version`, which defaults to `develop`.
 

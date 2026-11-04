@@ -68,6 +68,11 @@ on:
         required: false
         default: ubuntu-24.04
         type: string
+      psql_client_version:
+        description: PSQL client major (x-stream) version to install, leave empty to use the runner's existing tools
+        default: ''
+        required: false
+        type: string
       additional_packages:
         description: String of additional packages that should be installed
         default: ''
@@ -130,6 +135,21 @@ jobs:
           sudo dpkg-reconfigure man-db
       - run: sudo apt-get update
       - run: sudo apt-get install -y build-essential libcurl4-openssl-dev zlib1g-dev libpq-dev libcap-dev
+      - name: Install PostgreSQL client tools
+        if: ${{ inputs.psql_client_version != '' }}
+        env:
+          PSQL_CLIENT_VERSION: ${{ inputs.psql_client_version }}
+        run: |
+          sudo apt-get install -y postgresql-common ca-certificates
+          sudo /usr/share/postgresql-common/pgdg/apt.postgresql.org.sh -y
+          sudo apt-get update
+          sudo apt-get install -y "psql-client-${PSQL_CLIENT_VERSION}"
+          echo "/usr/lib/postgresql/${PSQL_CLIENT_VERSION}/bin" >> "$GITHUB_PATH"
+      - name: Verify PostgreSQL client tools
+        if: ${{ inputs.psql_client_version != '' }}
+        run: |
+          pg_dump --version
+          psql --version
       - name: install additional packages
         if: ${{ inputs.additional_packages != '' }}
         run: sudo apt-get install -y ${{ inputs.additional_packages }}
@@ -272,6 +292,21 @@ jobs:
           sudo dpkg-reconfigure man-db
       - run: sudo apt-get update
       - run: sudo apt-get install -y build-essential libcurl4-openssl-dev zlib1g-dev libpq-dev libcap-dev
+      - name: Install PostgreSQL client tools
+        if: ${{ inputs.psql_client_version != '' }}
+        env:
+          PSQL_CLIENT_VERSION: ${{ inputs.psql_client_version }}
+        run: |
+          sudo apt-get install -y postgresql-common ca-certificates
+          sudo /usr/share/postgresql-common/pgdg/apt.postgresql.org.sh -y
+          sudo apt-get update
+          sudo apt-get install -y "postgresql-client-${PSQL_CLIENT_VERSION}"
+          echo "/usr/lib/postgresql/${PSQL_CLIENT_VERSION}/bin" >> "$GITHUB_PATH"
+      - name: Verify PostgreSQL client tools
+        if: ${{ inputs.psql_client_version != '' }}
+        run: |
+          pg_dump --version
+          psql --version
 
       - name: install additional packages
         if: ${{ inputs.additional_packages != '' }}
